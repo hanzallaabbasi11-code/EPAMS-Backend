@@ -184,6 +184,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\Datacell\EnrollmentController.cs" />
+    <Compile Include="Controllers\Director\SeePerformanceController.cs" />
     <Compile Include="Controllers\HOD\CourseManagementController.cs" />
     <Compile Include="Controllers\HOD\PeerEvaluatorsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
