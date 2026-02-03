@@ -186,6 +186,7 @@
     <Compile Include="Controllers\Datacell\EnrollmentController.cs" />
     <Compile Include="Controllers\Director\SeePerformanceController.cs" />
     <Compile Include="Controllers\HOD\CourseManagementController.cs" />
+    <Compile Include="Controllers\HOD\KPIController.cs" />
     <Compile Include="Controllers\HOD\PeerEvaluatorsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Login\UsersController.cs" />
@@ -204,6 +205,7 @@
     <Compile Include="Models\CourseAllocation.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DTO\AddKpiDto.cs" />
     <Compile Include="Models\DTO\AddPeerEvaluatorDto.cs" />
     <Compile Include="Models\EmployeeType.cs">
       <DependentUpon>Model1.tt</DependentUpon>
