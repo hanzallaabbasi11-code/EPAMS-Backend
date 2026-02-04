@@ -53,6 +53,7 @@
           </Key>
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="name" Type="varchar" MaxLength="50" />
+          <Property Name="KPI_Employeetype" Type="int" />
         </EntityType>
         <EntityType Name="KPIScore">
           <Key>
@@ -688,6 +689,7 @@
           <NavigationProperty Name="EmployeSessionKPIs" Relationship="Self.FK__EmployeSe__KPIID__3F466844" FromRole="KPI" ToRole="EmployeSessionKPI" />
           <NavigationProperty Name="SessionKPIWeights" Relationship="Self.FK__SessionKP__KPIID__6E01572D" FromRole="KPI" ToRole="SessionKPIWeight" />
           <NavigationProperty Name="SubKPIs" Relationship="Self.FK__SubKPI__KPIID__3C69FB99" FromRole="KPI" ToRole="SubKPI" />
+          <Property Name="KPI_Employeetype" Type="Int32" />
         </EntityType>
         <EntityType Name="KPIScore">
           <Key>
@@ -1347,6 +1349,7 @@
           <EntitySetMapping Name="KPIs">
             <EntityTypeMapping TypeName="EPAMSModel.KPI">
               <MappingFragment StoreEntitySet="KPI">
+                <ScalarProperty Name="KPI_Employeetype" ColumnName="KPI_Employeetype" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="name" ColumnName="name" />
               </MappingFragment>

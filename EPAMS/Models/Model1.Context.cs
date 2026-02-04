@@ -15,8 +15,6 @@ namespace EPAMS.Models
     
     public partial class EPAMSEntities : DbContext
     {
-        internal object Session;
-
         public EPAMSEntities()
             : base("name=EPAMSEntities")
         {
@@ -44,8 +42,5 @@ namespace EPAMS.Models
         public DbSet<SubKPI> SubKPIs { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<User> Users { get; set; }
-        public object Student { get; internal set; }
-        public object Course { get; internal set; }
-        public object Teacher { get; internal set; }
     }
 }

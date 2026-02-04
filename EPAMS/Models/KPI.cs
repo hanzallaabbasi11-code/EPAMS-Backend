@@ -23,6 +23,7 @@ namespace EPAMS.Models
     
         public int id { get; set; }
         public string name { get; set; }
+        public Nullable<int> KPI_Employeetype { get; set; }
     
         public virtual ICollection<EmployeSessionKPI> EmployeSessionKPIs { get; set; }
         public virtual ICollection<SessionKPIWeight> SessionKPIWeights { get; set; }
