@@ -42,5 +42,6 @@ namespace EPAMS.Models
         public DbSet<SubKPI> SubKPIs { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Question> Questions { get; set; }
     }
 }

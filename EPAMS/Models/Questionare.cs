@@ -18,13 +18,15 @@ namespace EPAMS.Models
         {
             this.PeerEvaluations = new HashSet<PeerEvaluation>();
             this.StudentEvaluations = new HashSet<StudentEvaluation>();
+            this.Questions = new HashSet<Question>();
         }
     
         public int id { get; set; }
-        public string question { get; set; }
         public string type { get; set; }
+        public string flag { get; set; }
     
         public virtual ICollection<PeerEvaluation> PeerEvaluations { get; set; }
         public virtual ICollection<StudentEvaluation> StudentEvaluations { get; set; }
+        public virtual ICollection<Question> Questions { get; set; }
     }
 }
