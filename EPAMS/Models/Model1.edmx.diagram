@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="aaf230a1864f48b5909801a61aa77d09" Name="Diagram1" ZoomLevel="59">
+      <Diagram DiagramId="aaf230a1864f48b5909801a61aa77d09" Name="Diagram1" ZoomLevel="71">
         <EntityTypeShape EntityType="EPAMSModel.Course" Width="1.5" PointX="0.75" PointY="4.125" IsExpanded="true" />
         <EntityTypeShape EntityType="EPAMSModel.CourseAllocation" Width="1.5" PointX="3" PointY="11.25" IsExpanded="true" />
         <EntityTypeShape EntityType="EPAMSModel.EmployeeType" Width="1.5" PointX="0.75" PointY="1.75" IsExpanded="true" />
@@ -52,6 +52,8 @@
         <AssociationConnector Association="EPAMSModel.FK__Teacher__userID__4E88ABD4" ManuallyRouted="false" />
         <EntityTypeShape EntityType="EPAMSModel.Question" Width="1.5" PointX="8.25" PointY="3.75" />
         <AssociationConnector Association="EPAMSModel.FK_Questions_Questionare" />
+        <AssociationConnector Association="EPAMSModel.FK__PeerEvalu__quest__282DF8C2" />
+        <AssociationConnector Association="EPAMSModel.FK_StudentEvaluation_Questions" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

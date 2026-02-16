@@ -21,5 +21,6 @@ namespace EPAMS.Models
     
         public virtual Enrollment Enrollment { get; set; }
         public virtual Questionare Questionare { get; set; }
+        public virtual Question Question { get; set; }
     }
 }

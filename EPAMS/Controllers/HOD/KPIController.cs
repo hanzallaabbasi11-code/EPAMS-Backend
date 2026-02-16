@@ -10,7 +10,7 @@ using System.Web.Http;
 namespace EmpPerAppE.Controllers.HOD
 {
     [RoutePrefix("api/kpi")]
-    public class KPIController : ApiController
+    public class KpiController : ApiController
     {
         EPAMSEntities db = new EPAMSEntities();
 
@@ -195,7 +195,7 @@ namespace EmpPerAppE.Controllers.HOD
 
                     db.KPIs.Remove(kpi);
                     db.SaveChanges();
-
+                    
                     var bakiWeights = db.SessionKPIWeights.Where(w => w.SessionID == sid &&
                                       db.KPIs.Any(k => k.id == w.KPIID && k.KPI_Employeetype == empTypeId)).ToList();
 

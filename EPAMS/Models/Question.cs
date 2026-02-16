@@ -14,10 +14,18 @@ namespace EPAMS.Models
     
     public partial class Question
     {
+        public Question()
+        {
+            this.PeerEvaluations = new HashSet<PeerEvaluation>();
+            this.StudentEvaluations = new HashSet<StudentEvaluation>();
+        }
+    
         public int QuestionID { get; set; }
         public int QuestionareID { get; set; }
         public string QuestionText { get; set; }
     
         public virtual Questionare Questionare { get; set; }
+        public virtual ICollection<PeerEvaluation> PeerEvaluations { get; set; }
+        public virtual ICollection<StudentEvaluation> StudentEvaluations { get; set; }
     }
 }
