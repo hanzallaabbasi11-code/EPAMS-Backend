@@ -352,18 +352,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__PeerEvalu__quest__6477ECF3">
-          <End Role="Questionare" Type="Self.Questionare" Multiplicity="0..1" />
-          <End Role="PeerEvaluation" Type="Self.PeerEvaluation" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Questionare">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="PeerEvaluation">
-              <PropertyRef Name="questionID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK__PeerEvalu__sessi__5FB337D6">
           <End Role="Session" Type="Self.Session" Multiplicity="0..1" />
           <End Role="PeerEvaluator" Type="Self.PeerEvaluator" Multiplicity="*" />
@@ -457,6 +445,18 @@
             </Principal>
             <Dependent Role="SubKPI">
               <PropertyRef Name="KPIID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PeerEvaluation_Questions">
+          <End Role="Questions" Type="Self.Questions" Multiplicity="0..1" />
+          <End Role="PeerEvaluation" Type="Self.PeerEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Questions">
+              <PropertyRef Name="QuestionID" />
+            </Principal>
+            <Dependent Role="PeerEvaluation">
+              <PropertyRef Name="questionID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -591,10 +591,6 @@
             <End Role="Questions" EntitySet="Questions" />
             <End Role="PeerEvaluation" EntitySet="PeerEvaluation" />
           </AssociationSet>
-          <AssociationSet Name="FK__PeerEvalu__quest__6477ECF3" Association="Self.FK__PeerEvalu__quest__6477ECF3">
-            <End Role="Questionare" EntitySet="Questionare" />
-            <End Role="PeerEvaluation" EntitySet="PeerEvaluation" />
-          </AssociationSet>
           <AssociationSet Name="FK__PeerEvalu__sessi__5FB337D6" Association="Self.FK__PeerEvalu__sessi__5FB337D6">
             <End Role="Session" EntitySet="Session" />
             <End Role="PeerEvaluator" EntitySet="PeerEvaluator" />
@@ -626,6 +622,10 @@
           <AssociationSet Name="FK__SubKPI__KPIID__3C69FB99" Association="Self.FK__SubKPI__KPIID__3C69FB99">
             <End Role="KPI" EntitySet="KPI" />
             <End Role="SubKPI" EntitySet="SubKPI" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PeerEvaluation_Questions" Association="Self.FK_PeerEvaluation_Questions">
+            <End Role="Questions" EntitySet="Questions" />
+            <End Role="PeerEvaluation" EntitySet="PeerEvaluation" />
           </AssociationSet>
           <AssociationSet Name="FK_Questions_Questionare" Association="Self.FK_Questions_Questionare">
             <End Role="Questionare" EntitySet="Questionare" />
@@ -742,7 +742,6 @@
           <NavigationProperty Name="Course" Relationship="Self.FK__PeerEvalu__cours__656C112C" FromRole="PeerEvaluation" ToRole="Course" />
           <NavigationProperty Name="PeerEvaluator" Relationship="Self.FK__PeerEvalu__evalu__628FA481" FromRole="PeerEvaluation" ToRole="PeerEvaluator" />
           <NavigationProperty Name="Teacher" Relationship="Self.FK__PeerEvalu__evalu__6383C8BA" FromRole="PeerEvaluation" ToRole="Teacher" />
-          <NavigationProperty Name="Questionare" Relationship="Self.FK__PeerEvalu__quest__6477ECF3" FromRole="PeerEvaluation" ToRole="Questionare" />
           <NavigationProperty Name="Question" Relationship="EPAMSModel.FK__PeerEvalu__quest__282DF8C2" FromRole="PeerEvaluation" ToRole="Question" />
         </EntityType>
         <EntityType Name="PeerEvaluator">
@@ -813,7 +812,6 @@
           <Property Name="questionID" Type="Int32" />
           <Property Name="score" Type="Int32" />
           <NavigationProperty Name="Enrollment" Relationship="Self.FK__StudentEv__enrol__5AEE82B9" FromRole="StudentEvaluation" ToRole="Enrollment" />
-          <NavigationProperty Name="Questionare" Relationship="Self.FK__StudentEv__quest__5BE2A6F2" FromRole="StudentEvaluation" ToRole="Questionare" />
           <NavigationProperty Name="Question" Relationship="EPAMSModel.FK_StudentEvaluation_Questions" FromRole="StudentEvaluation" ToRole="Question" />
         </EntityType>
         <EntityType Name="SubKPI">

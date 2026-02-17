@@ -72,6 +72,19 @@ namespace EPAMS.Controllers.Student
                 }
             }
 
+            [HttpGet]
+            [Route("GetStudentName/{studentId}")]
+            public IHttpActionResult GetStudentName(string studentId)
+            {
+                var student = db.Students.FirstOrDefault(s => s.userID == studentId);
+                if (student == null)
+                    return NotFound();
+                return Ok(student.name);
+            }
+
         }
+
+
+
     }
 }

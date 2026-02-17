@@ -8,6 +8,6 @@ namespace EPAMS.Models.DTO
     public class AddPeerEvaluatorDto
     {
         public int SessionId { get; set; }
-        public List<int> TeacherIds { get; set; }
+        public List<string> TeacherIds { get; set; }
     }
 }

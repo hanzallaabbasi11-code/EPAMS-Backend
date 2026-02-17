@@ -20,7 +20,6 @@ namespace EPAMS.Models
         public Nullable<int> score { get; set; }
     
         public virtual Enrollment Enrollment { get; set; }
-        public virtual Questionare Questionare { get; set; }
         public virtual Question Question { get; set; }
     }
 }
