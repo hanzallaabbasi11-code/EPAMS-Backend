@@ -133,6 +133,7 @@
           <Property Name="enrollmentID" Type="int" />
           <Property Name="questionID" Type="int" />
           <Property Name="score" Type="int" />
+          <Property Name="StudentId" Type="varchar" MaxLength="20" Nullable="false" />
         </EntityType>
         <EntityType Name="SubKPI">
           <Key>
@@ -424,18 +425,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__StudentEv__quest__5BE2A6F2">
-          <End Role="Questionare" Type="Self.Questionare" Multiplicity="0..1" />
-          <End Role="StudentEvaluation" Type="Self.StudentEvaluation" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Questionare">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="StudentEvaluation">
-              <PropertyRef Name="questionID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK__SubKPI__KPIID__3C69FB99">
           <End Role="KPI" Type="Self.KPI" Multiplicity="0..1" />
           <End Role="SubKPI" Type="Self.SubKPI" Multiplicity="*" />
@@ -493,6 +482,18 @@
             </Principal>
             <Dependent Role="StudentEvaluation">
               <PropertyRef Name="questionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StudentEvaluation_Student">
+          <End Role="Student" Type="Self.Student" Multiplicity="1" />
+          <End Role="StudentEvaluation" Type="Self.StudentEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Student">
+              <PropertyRef Name="userID" />
+            </Principal>
+            <Dependent Role="StudentEvaluation">
+              <PropertyRef Name="StudentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -615,10 +616,6 @@
             <End Role="Session" EntitySet="Session" />
             <End Role="Student" EntitySet="Student" />
           </AssociationSet>
-          <AssociationSet Name="FK__StudentEv__quest__5BE2A6F2" Association="Self.FK__StudentEv__quest__5BE2A6F2">
-            <End Role="Questionare" EntitySet="Questionare" />
-            <End Role="StudentEvaluation" EntitySet="StudentEvaluation" />
-          </AssociationSet>
           <AssociationSet Name="FK__SubKPI__KPIID__3C69FB99" Association="Self.FK__SubKPI__KPIID__3C69FB99">
             <End Role="KPI" EntitySet="KPI" />
             <End Role="SubKPI" EntitySet="SubKPI" />
@@ -637,6 +634,10 @@
           </AssociationSet>
           <AssociationSet Name="FK_StudentEvaluation_Questions" Association="Self.FK_StudentEvaluation_Questions">
             <End Role="Questions" EntitySet="Questions" />
+            <End Role="StudentEvaluation" EntitySet="StudentEvaluation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_StudentEvaluation_Student" Association="Self.FK_StudentEvaluation_Student">
+            <End Role="Student" EntitySet="Student" />
             <End Role="StudentEvaluation" EntitySet="StudentEvaluation" />
           </AssociationSet>
           <AssociationSet Name="FK_Teacher_userID" Association="Self.FK_Teacher_userID">
@@ -802,6 +803,7 @@
           <NavigationProperty Name="Enrollments" Relationship="Self.FK__Enrollmen__stude__534D60F1" FromRole="Student" ToRole="Enrollment" />
           <NavigationProperty Name="Session" Relationship="Self.FK__Student__admissi__4BAC3F29" FromRole="Student" ToRole="Session" />
           <NavigationProperty Name="User" Relationship="Self.FK__Student__userID__4AB81AF0" FromRole="Student" ToRole="Users" />
+          <NavigationProperty Name="StudentEvaluations" Relationship="EPAMSModel.FK_StudentEvaluation_Student" FromRole="Student" ToRole="StudentEvaluation" />
         </EntityType>
         <EntityType Name="StudentEvaluation">
           <Key>
@@ -813,6 +815,8 @@
           <Property Name="score" Type="Int32" />
           <NavigationProperty Name="Enrollment" Relationship="Self.FK__StudentEv__enrol__5AEE82B9" FromRole="StudentEvaluation" ToRole="Enrollment" />
           <NavigationProperty Name="Question" Relationship="EPAMSModel.FK_StudentEvaluation_Questions" FromRole="StudentEvaluation" ToRole="Question" />
+          <Property Name="StudentId" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Student" Relationship="EPAMSModel.FK_StudentEvaluation_Student" FromRole="StudentEvaluation" ToRole="Student" />
         </EntityType>
         <EntityType Name="SubKPI">
           <Key>
@@ -1331,6 +1335,10 @@
             <End Role="Question" EntitySet="Questions" />
             <End Role="StudentEvaluation" EntitySet="StudentEvaluations" />
           </AssociationSet>
+          <AssociationSet Name="FK_StudentEvaluation_Student" Association="EPAMSModel.FK_StudentEvaluation_Student">
+            <End Role="Student" EntitySet="Students" />
+            <End Role="StudentEvaluation" EntitySet="StudentEvaluations" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Question">
           <Key>
@@ -1376,6 +1384,18 @@
             </Principal>
             <Dependent Role="StudentEvaluation">
               <PropertyRef Name="questionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_StudentEvaluation_Student">
+          <End Type="EPAMSModel.Student" Role="Student" Multiplicity="1" />
+          <End Type="EPAMSModel.StudentEvaluation" Role="StudentEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Student">
+              <PropertyRef Name="userID" />
+            </Principal>
+            <Dependent Role="StudentEvaluation">
+              <PropertyRef Name="StudentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1513,6 +1533,7 @@
           <EntitySetMapping Name="StudentEvaluations">
             <EntityTypeMapping TypeName="EPAMSModel.StudentEvaluation">
               <MappingFragment StoreEntitySet="StudentEvaluation">
+                <ScalarProperty Name="StudentId" ColumnName="StudentId" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="enrollmentID" ColumnName="enrollmentID" />
                 <ScalarProperty Name="questionID" ColumnName="questionID" />

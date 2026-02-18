@@ -82,6 +82,60 @@ namespace EPAMS.Controllers.Student
                 return Ok(student.name);
             }
 
+
+            [HttpPost]
+            [Route("SubmitStudentEvaluation")]
+            public IHttpActionResult SubmitStudentEvaluation(
+     [FromBody] List<StudentEvaluation> evaluations)
+            {
+                try
+                {
+                    if (evaluations == null || !evaluations.Any())
+                        return BadRequest("Invalid submission");
+
+                    foreach (var e in evaluations)
+                    {
+                        db.StudentEvaluations.Add(new StudentEvaluation
+                        {
+                            enrollmentID = e.enrollmentID,
+                            questionID = e.questionID,
+                            score = e.score,
+                            StudentId = e.StudentId
+                        });
+                    }
+
+                    db.SaveChanges();
+
+                    return Ok(new { success = true });
+                }
+                catch (Exception ex)
+                {
+                    return Content(HttpStatusCode.InternalServerError, new
+                    {
+                        error = ex.Message,
+                        inner = ex.InnerException?.Message,
+                        innerInner = ex.InnerException?.InnerException?.Message
+                    });
+                }
+            }
+
+
+
+
+            [HttpGet]
+            [Route("GetSubmittedStudentEvaluations/{studentId}")]
+            public IHttpActionResult GetSubmittedStudentEvaluations(string studentId)
+            {
+                var submitted = db.StudentEvaluations
+                    .Where(se => se.StudentId.Trim().ToLower() == studentId.Trim().ToLower())
+                    .Select(se => se.enrollmentID)
+                    .Distinct()
+                    .ToList();
+
+                return Ok(submitted);
+            }
+
+
         }
 
 

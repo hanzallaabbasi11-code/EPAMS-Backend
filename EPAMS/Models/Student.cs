@@ -17,6 +17,7 @@ namespace EPAMS.Models
         public Student()
         {
             this.Enrollments = new HashSet<Enrollment>();
+            this.StudentEvaluations = new HashSet<StudentEvaluation>();
         }
     
         public string userID { get; set; }
@@ -26,5 +27,6 @@ namespace EPAMS.Models
         public virtual ICollection<Enrollment> Enrollments { get; set; }
         public virtual Session Session { get; set; }
         public virtual User User { get; set; }
+        public virtual ICollection<StudentEvaluation> StudentEvaluations { get; set; }
     }
 }
