@@ -215,6 +215,7 @@
     </Compile>
     <Compile Include="Models\DTO\AddKpiDto.cs" />
     <Compile Include="Models\DTO\AddPeerEvaluatorDto.cs" />
+    <Compile Include="Models\DTO\ConfidentialEvaluationDto.cs" />
     <Compile Include="Models\DTO\DynamicSubKpiDto.cs" />
     <Compile Include="Models\DTO\QuestionCreateDto.cs" />
     <Compile Include="Models\DTO\QuestionnaireListDto.cs" />

@@ -1,9 +1,11 @@
 ﻿using EPAMS.Models;
+using EPAMS.Models.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Mail;
 using System.Web.Http;
 
 namespace EPAMS.Controllers.Student
@@ -136,7 +138,134 @@ namespace EPAMS.Controllers.Student
             }
 
 
+            [HttpPost]
+            [Route("SubmitConfidentialEvaluation")]
+            public IHttpActionResult SubmitConfidentialEvaluation(
+              [FromBody] ConfidentialEvaluationDto model)
+            {
+                if (model == null || model.Answers == null || !model.Answers.Any())
+                    return BadRequest("Invalid submission");
+
+                try
+                {
+
+                    var enrollment = db.Enrollments
+                        .FirstOrDefault(e => e.id == model.EnrollmentId);
+
+                    if (enrollment == null)
+                        return NotFound();
+
+
+                    var student = db.Students
+                        .FirstOrDefault(s => s.userID == model.StudentId);
+
+                    var teacher = db.Teachers
+                        .FirstOrDefault(t => t.userID == enrollment.teacherID);
+
+                    var course = db.Courses
+                        .FirstOrDefault(c => c.code == enrollment.courseCode);
+
+                    var questionIds = model.Answers.Select(a => a.questionId).ToList();
+
+                    var questions = db.Questions
+                        .Where(q => questionIds.Contains(q.QuestionID))
+                        .ToList();
+
+                    // 🔹 Build Email Body
+
+                    //string body = "";
+                    //body += "CONFIDENTIAL EVALUATION\n\n";
+                    //body += "Student: " + student?.name + "\n";
+                    //body += "Teacher: " + teacher?.name + "\n";
+                    //body += "Course: " + course?.title + "\n";
+                    //body += "Date: " + DateTime.Now + "\n\n";
+                    //body += "-----------------------------\n";
+                    //body += "Questions & Answers\n";
+                    //body += "-----------------------------\n\n";
+
+                    //foreach (var ans in model.Answers)
+                    //{
+                    //    var question = questions
+                    //        .FirstOrDefault(q => q.QuestionID == ans.questionId);
+
+                    //    body += "Q: " + question?.QuestionText + "\n";
+                    //    body += "Score: " + ans.score + "\n\n";
+                    //}
+
+                    var emailObject = new
+                    {
+                        studentId = model.StudentId,
+                        teacherId = teacher?.userID,
+                        session = enrollment.Session.name,
+                        subjectCode = enrollment.courseCode,
+                        submittedOn = DateTime.Now,
+                        evaluation = model.Answers.Select(a =>
+                        {
+                            var question = questions
+                                .FirstOrDefault(q => q.QuestionID == a.questionId);
+
+                            return new
+                            {
+                                qId = a.questionId,
+                                questionText = question?.QuestionText,
+                                score = a.score
+                            };
+                        }).ToList()
+                    };
+
+                    string body = Newtonsoft.Json.JsonConvert.SerializeObject(emailObject, Newtonsoft.Json.Formatting.Indented);
+
+
+
+                    SendEmail(body);
+
+                    return Ok(new { success = true });
+                }
+                catch (Exception ex)
+                {
+                    return Ok(new
+                    {
+                        error = ex.Message,
+                        inner = ex.InnerException?.Message
+                    });
+                }
+            }
+
+
+
+            private void SendEmail(string body)
+            {
+                var fromAddress = new MailAddress("biit.epas.system@gmail.com");
+                var toAddress = new MailAddress("abbasihanzalla@gmail.com");
+
+                const string fromPassword = "viylzrgalznlcnys";
+
+                var smtp = new SmtpClient
+                {
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    EnableSsl = true,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(
+                        fromAddress.Address,
+                        fromPassword)
+                };
+
+                using (var message = new MailMessage(fromAddress, toAddress)
+                {
+                    Subject = "Confidential Evaluation - EPAS",
+                    Body = body
+                })
+                {
+                    smtp.Send(message);
+                }
+            }
+
+
         }
+
+
+
 
 
 
