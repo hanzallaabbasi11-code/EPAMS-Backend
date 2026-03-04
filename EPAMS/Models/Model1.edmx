@@ -21,6 +21,14 @@
           <Property Name="courseCode" Type="varchar" MaxLength="20" />
           <Property Name="sessionID" Type="int" />
         </EntityType>
+        <EntityType Name="Email">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="mail" Type="varchar" MaxLength="100" />
+          <Property Name="isActive" Type="bit" />
+        </EntityType>
         <EntityType Name="EmployeeType">
           <Key>
             <PropertyRef Name="id" />
@@ -512,6 +520,7 @@
         <EntityContainer Name="EPAMSModelStoreContainer">
           <EntitySet Name="Course" EntityType="Self.Course" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CourseAllocation" EntityType="Self.CourseAllocation" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Email" EntityType="Self.Email" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EmployeeType" EntityType="Self.EmployeeType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EmployeSessionKPI" EntityType="Self.EmployeSessionKPI" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Enrollment" EntityType="Self.Enrollment" Schema="dbo" store:Type="Tables" />
@@ -1339,6 +1348,7 @@
             <End Role="Student" EntitySet="Students" />
             <End Role="StudentEvaluation" EntitySet="StudentEvaluations" />
           </AssociationSet>
+          <EntitySet Name="Emails" EntityType="EPAMSModel.Email" />
         </EntityContainer>
         <EntityType Name="Question">
           <Key>
@@ -1399,6 +1409,14 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Email">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="isActive" Type="Boolean" />
+          <Property Name="mail" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1576,6 +1594,15 @@
                 <ScalarProperty Name="QuestionText" ColumnName="QuestionText" />
                 <ScalarProperty Name="QuestionareID" ColumnName="QuestionareID" />
                 <ScalarProperty Name="QuestionID" ColumnName="QuestionID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Emails">
+            <EntityTypeMapping TypeName="EPAMSModel.Email">
+              <MappingFragment StoreEntitySet="Email">
+                <ScalarProperty Name="mail" ColumnName="mail" />
+                <ScalarProperty Name="isActive" ColumnName="isActive" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

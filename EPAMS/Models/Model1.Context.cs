@@ -43,5 +43,6 @@ namespace EPAMS.Models
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Question> Questions { get; set; }
+        public DbSet<Email> Emails { get; set; }
     }
 }

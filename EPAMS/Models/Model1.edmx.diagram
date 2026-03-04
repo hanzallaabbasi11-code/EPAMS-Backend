@@ -55,6 +55,7 @@
         <AssociationConnector Association="EPAMSModel.FK__PeerEvalu__quest__282DF8C2" />
         <AssociationConnector Association="EPAMSModel.FK_StudentEvaluation_Questions" />
         <AssociationConnector Association="EPAMSModel.FK_StudentEvaluation_Student" />
+        <EntityTypeShape EntityType="EPAMSModel.Email" Width="1.5" PointX="6.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

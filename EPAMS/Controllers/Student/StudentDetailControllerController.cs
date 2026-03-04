@@ -236,7 +236,9 @@ namespace EPAMS.Controllers.Student
             private void SendEmail(string body)
             {
                 var fromAddress = new MailAddress("biit.epas.system@gmail.com");
-                var toAddress = new MailAddress("abbasihanzalla@gmail.com");
+                var activeEmail = db.Emails
+                               .FirstOrDefault(x => x.isActive == true);
+                var toAddress = new MailAddress(activeEmail.mail);
 
                 const string fromPassword = "viylzrgalznlcnys";
 
