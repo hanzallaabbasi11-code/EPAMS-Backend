@@ -23,7 +23,9 @@ namespace EPAMS.Models
         public Nullable<int> KPIID { get; set; }
         public Nullable<int> SubKPIID { get; set; }
         public Nullable<int> SessionID { get; set; }
+        public Nullable<int> EmployeetypeID { get; set; }
     
+        public virtual EmployeeType EmployeeType { get; set; }
         public virtual KPI KPI { get; set; }
         public virtual Session Session { get; set; }
         public virtual SubKPI SubKPI { get; set; }

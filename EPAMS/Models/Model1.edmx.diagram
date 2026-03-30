@@ -4,14 +4,12 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="aaf230a1864f48b5909801a61aa77d09" Name="Diagram1" ZoomLevel="89">
+      <Diagram DiagramId="aaf230a1864f48b5909801a61aa77d09" Name="Diagram1" ZoomLevel="69">
         <EntityTypeShape EntityType="EPAMSModel.Course" Width="1.5" PointX="0.75" PointY="4.125" IsExpanded="true" />
         <EntityTypeShape EntityType="EPAMSModel.CourseAllocation" Width="1.5" PointX="3" PointY="11.25" IsExpanded="true" />
         <EntityTypeShape EntityType="EPAMSModel.EmployeeType" Width="1.5" PointX="0.75" PointY="1.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="EPAMSModel.EmployeSessionKPI" Width="1.5" PointX="6" PointY="11.25" IsExpanded="true" />
         <EntityTypeShape EntityType="EPAMSModel.Enrollment" Width="1.5" PointX="3" PointY="7" IsExpanded="true" />
         <EntityTypeShape EntityType="EPAMSModel.KPI" Width="1.5" PointX="3.75" PointY="4" IsExpanded="true" />
-        <EntityTypeShape EntityType="EPAMSModel.KPIScore" Width="1.5" PointX="8.25" PointY="11.25" IsExpanded="true" />
         <EntityTypeShape EntityType="EPAMSModel.PeerEvaluation" Width="1.5" PointX="8.25" PointY="15" IsExpanded="true" />
         <EntityTypeShape EntityType="EPAMSModel.PeerEvaluator" Width="1.5" PointX="3" PointY="14.375" IsExpanded="true" />
         <EntityTypeShape EntityType="EPAMSModel.Questionare" Width="1.5" PointX="6" PointY="3.5" IsExpanded="true" />
@@ -27,18 +25,12 @@
         <AssociationConnector Association="EPAMSModel.FK__PeerEvalu__cours__656C112C" ManuallyRouted="false" />
         <AssociationConnector Association="EPAMSModel.FK__CourseAll__sessi__6A30C649" ManuallyRouted="false" />
         <AssociationConnector Association="EPAMSModel.FK__CourseAll__teach__68487DD7" ManuallyRouted="false" />
-        <AssociationConnector Association="EPAMSModel.FK__EmployeSe__KPIID__3F466844" ManuallyRouted="false" />
-        <AssociationConnector Association="EPAMSModel.FK__EmployeSe__Sessi__412EB0B6" ManuallyRouted="false" />
-        <AssociationConnector Association="EPAMSModel.FK__EmployeSe__SubKP__403A8C7D" ManuallyRouted="false" />
-        <AssociationConnector Association="EPAMSModel.FK__KPIScore__empKPI__45F365D3" ManuallyRouted="false" />
         <AssociationConnector Association="EPAMSModel.FK__Enrollmen__sessi__5629CD9C" ManuallyRouted="false" />
         <AssociationConnector Association="EPAMSModel.FK__Enrollmen__stude__534D60F1" ManuallyRouted="false" />
         <AssociationConnector Association="EPAMSModel.FK__Enrollmen__teach__5441852A" ManuallyRouted="false" />
         <AssociationConnector Association="EPAMSModel.FK__StudentEv__enrol__5AEE82B9" ManuallyRouted="false" />
         <AssociationConnector Association="EPAMSModel.FK__SessionKP__KPIID__6E01572D" ManuallyRouted="false" />
         <AssociationConnector Association="EPAMSModel.FK__SubKPI__KPIID__3C69FB99" ManuallyRouted="false" />
-        <AssociationConnector Association="EPAMSModel.FK__KPIScore__empID__46E78A0C" ManuallyRouted="false" />
-        <AssociationConnector Association="EPAMSModel.FK__KPIScore__evalua__47DBAE45" ManuallyRouted="false" />
         <AssociationConnector Association="EPAMSModel.FK__PeerEvalu__evalu__628FA481" ManuallyRouted="false" />
         <AssociationConnector Association="EPAMSModel.FK__PeerEvalu__evalu__6383C8BA" ManuallyRouted="false" />
         <AssociationConnector Association="EPAMSModel.FK__PeerEvalu__quest__6477ECF3" ManuallyRouted="false" />
@@ -56,7 +48,16 @@
         <AssociationConnector Association="EPAMSModel.FK_StudentEvaluation_Questions" />
         <AssociationConnector Association="EPAMSModel.FK_StudentEvaluation_Student" />
         <EntityTypeShape EntityType="EPAMSModel.Email" Width="1.5" PointX="6.375" PointY="0.75" />
-      </Diagram>
+        <EntityTypeShape EntityType="EPAMSModel.EmployeSessionKPI" Width="1.5" PointX="6" PointY="10.75" />
+        <EntityTypeShape EntityType="EPAMSModel.KPIScore" Width="1.5" PointX="8.25" PointY="11.625" />
+        <AssociationConnector Association="EPAMSModel.FK__EmployeSe__Emplo__793DFFAF" />
+        <AssociationConnector Association="EPAMSModel.FK__EmployeSe__KPIID__76619304" />
+        <AssociationConnector Association="EPAMSModel.FK__EmployeSe__Sessi__7849DB76" />
+        <AssociationConnector Association="EPAMSModel.FK__EmployeSe__SubKP__7755B73D" />
+        <AssociationConnector Association="EPAMSModel.FK__KPIScore__empKPI__7C1A6C5A" />
+        <AssociationConnector Association="EPAMSModel.FK__KPIScore__empID__7D0E9093" />
+        <AssociationConnector Association="EPAMSModel.FK__KPIScore__evalua__7E02B4CC" />
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

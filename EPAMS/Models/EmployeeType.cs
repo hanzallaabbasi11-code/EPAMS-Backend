@@ -14,7 +14,14 @@ namespace EPAMS.Models
     
     public partial class EmployeeType
     {
+        public EmployeeType()
+        {
+            this.EmployeSessionKPIs = new HashSet<EmployeSessionKPI>();
+        }
+    
         public int id { get; set; }
         public string type { get; set; }
+    
+        public virtual ICollection<EmployeSessionKPI> EmployeSessionKPIs { get; set; }
     }
 }

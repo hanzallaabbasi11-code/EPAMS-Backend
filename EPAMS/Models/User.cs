@@ -26,9 +26,9 @@ namespace EPAMS.Models
         public string profileImagePath { get; set; }
         public Nullable<int> isActive { get; set; }
     
-        public virtual ICollection<KPIScore> KPIScores { get; set; }
-        public virtual ICollection<KPIScore> KPIScores1 { get; set; }
         public virtual Student Student { get; set; }
         public virtual Teacher Teacher { get; set; }
+        public virtual ICollection<KPIScore> KPIScores { get; set; }
+        public virtual ICollection<KPIScore> KPIScores1 { get; set; }
     }
 }

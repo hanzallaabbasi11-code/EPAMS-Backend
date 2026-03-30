@@ -17,21 +17,21 @@ namespace EPAMS.Models
         public Session()
         {
             this.CourseAllocations = new HashSet<CourseAllocation>();
-            this.EmployeSessionKPIs = new HashSet<EmployeSessionKPI>();
             this.Enrollments = new HashSet<Enrollment>();
             this.PeerEvaluators = new HashSet<PeerEvaluator>();
             this.SessionKPIWeights = new HashSet<SessionKPIWeight>();
             this.Students = new HashSet<Student>();
+            this.EmployeSessionKPIs = new HashSet<EmployeSessionKPI>();
         }
     
         public int id { get; set; }
         public string name { get; set; }
     
         public virtual ICollection<CourseAllocation> CourseAllocations { get; set; }
-        public virtual ICollection<EmployeSessionKPI> EmployeSessionKPIs { get; set; }
         public virtual ICollection<Enrollment> Enrollments { get; set; }
         public virtual ICollection<PeerEvaluator> PeerEvaluators { get; set; }
         public virtual ICollection<SessionKPIWeight> SessionKPIWeights { get; set; }
         public virtual ICollection<Student> Students { get; set; }
+        public virtual ICollection<EmployeSessionKPI> EmployeSessionKPIs { get; set; }
     }
 }

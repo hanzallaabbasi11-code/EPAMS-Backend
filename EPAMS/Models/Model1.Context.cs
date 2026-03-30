@@ -28,10 +28,8 @@ namespace EPAMS.Models
         public DbSet<Course> Courses { get; set; }
         public DbSet<CourseAllocation> CourseAllocations { get; set; }
         public DbSet<EmployeeType> EmployeeTypes { get; set; }
-        public DbSet<EmployeSessionKPI> EmployeSessionKPIs { get; set; }
         public DbSet<Enrollment> Enrollments { get; set; }
         public DbSet<KPI> KPIs { get; set; }
-        public DbSet<KPIScore> KPIScores { get; set; }
         public DbSet<PeerEvaluation> PeerEvaluations { get; set; }
         public DbSet<PeerEvaluator> PeerEvaluators { get; set; }
         public DbSet<Questionare> Questionares { get; set; }
@@ -44,5 +42,7 @@ namespace EPAMS.Models
         public DbSet<User> Users { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Email> Emails { get; set; }
+        public DbSet<EmployeSessionKPI> EmployeSessionKPIs { get; set; }
+        public DbSet<KPIScore> KPIScores { get; set; }
     }
 }

@@ -16,16 +16,16 @@ namespace EPAMS.Models
     {
         public SubKPI()
         {
-            this.EmployeSessionKPIs = new HashSet<EmployeSessionKPI>();
             this.SessionKPIWeights = new HashSet<SessionKPIWeight>();
+            this.EmployeSessionKPIs = new HashSet<EmployeSessionKPI>();
         }
     
         public int id { get; set; }
         public Nullable<int> KPIID { get; set; }
         public string name { get; set; }
     
-        public virtual ICollection<EmployeSessionKPI> EmployeSessionKPIs { get; set; }
         public virtual KPI KPI { get; set; }
         public virtual ICollection<SessionKPIWeight> SessionKPIWeights { get; set; }
+        public virtual ICollection<EmployeSessionKPI> EmployeSessionKPIs { get; set; }
     }
 }
