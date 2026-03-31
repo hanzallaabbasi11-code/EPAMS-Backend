@@ -57,6 +57,8 @@
         <AssociationConnector Association="EPAMSModel.FK__KPIScore__empKPI__7C1A6C5A" />
         <AssociationConnector Association="EPAMSModel.FK__KPIScore__empID__7D0E9093" />
         <AssociationConnector Association="EPAMSModel.FK__KPIScore__evalua__7E02B4CC" />
+        <AssociationConnector Association="EPAMSModel.FK_SessionID" />
+        <AssociationConnector Association="EPAMSModel.FKSessionID" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

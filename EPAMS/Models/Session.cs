@@ -22,6 +22,8 @@ namespace EPAMS.Models
             this.SessionKPIWeights = new HashSet<SessionKPIWeight>();
             this.Students = new HashSet<Student>();
             this.EmployeSessionKPIs = new HashSet<EmployeSessionKPI>();
+            this.StudentEvaluations = new HashSet<StudentEvaluation>();
+            this.PeerEvaluations = new HashSet<PeerEvaluation>();
         }
     
         public int id { get; set; }
@@ -33,5 +35,7 @@ namespace EPAMS.Models
         public virtual ICollection<SessionKPIWeight> SessionKPIWeights { get; set; }
         public virtual ICollection<Student> Students { get; set; }
         public virtual ICollection<EmployeSessionKPI> EmployeSessionKPIs { get; set; }
+        public virtual ICollection<StudentEvaluation> StudentEvaluations { get; set; }
+        public virtual ICollection<PeerEvaluation> PeerEvaluations { get; set; }
     }
 }

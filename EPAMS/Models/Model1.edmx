@@ -84,6 +84,7 @@
           <Property Name="questionID" Type="int" />
           <Property Name="courseCode" Type="varchar" MaxLength="20" />
           <Property Name="score" Type="int" />
+          <Property Name="SessionID" Type="int" />
         </EntityType>
         <EntityType Name="PeerEvaluator">
           <Key>
@@ -143,6 +144,7 @@
           <Property Name="questionID" Type="int" />
           <Property Name="score" Type="int" />
           <Property Name="StudentId" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="SessionID" Type="int" />
         </EntityType>
         <EntityType Name="SubKPI">
           <Key>
@@ -482,6 +484,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_SessionID">
+          <End Role="Session" Type="Self.Session" Multiplicity="0..1" />
+          <End Role="StudentEvaluation" Type="Self.StudentEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Session">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="StudentEvaluation">
+              <PropertyRef Name="SessionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Student_userID">
           <End Role="Users" Type="Self.Users" Multiplicity="1" />
           <End Role="Student" Type="Self.Student" Multiplicity="0..1" />
@@ -527,6 +541,18 @@
             </Principal>
             <Dependent Role="Teacher">
               <PropertyRef Name="userID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKSessionID">
+          <End Role="Session" Type="Self.Session" Multiplicity="0..1" />
+          <End Role="PeerEvaluation" Type="Self.PeerEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Session">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PeerEvaluation">
+              <PropertyRef Name="SessionID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -654,6 +680,10 @@
             <End Role="Questionare" EntitySet="Questionare" />
             <End Role="Questions" EntitySet="Questions" />
           </AssociationSet>
+          <AssociationSet Name="FK_SessionID" Association="Self.FK_SessionID">
+            <End Role="Session" EntitySet="Session" />
+            <End Role="StudentEvaluation" EntitySet="StudentEvaluation" />
+          </AssociationSet>
           <AssociationSet Name="FK_Student_userID" Association="Self.FK_Student_userID">
             <End Role="Users" EntitySet="Users" />
             <End Role="Student" EntitySet="Student" />
@@ -669,6 +699,10 @@
           <AssociationSet Name="FK_Teacher_userID" Association="Self.FK_Teacher_userID">
             <End Role="Users" EntitySet="Users" />
             <End Role="Teacher" EntitySet="Teacher" />
+          </AssociationSet>
+          <AssociationSet Name="FKSessionID" Association="Self.FKSessionID">
+            <End Role="Session" EntitySet="Session" />
+            <End Role="PeerEvaluation" EntitySet="PeerEvaluation" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -745,6 +779,8 @@
           <NavigationProperty Name="PeerEvaluator" Relationship="Self.FK__PeerEvalu__evalu__628FA481" FromRole="PeerEvaluation" ToRole="PeerEvaluator" />
           <NavigationProperty Name="Teacher" Relationship="Self.FK__PeerEvalu__evalu__6383C8BA" FromRole="PeerEvaluation" ToRole="Teacher" />
           <NavigationProperty Name="Question" Relationship="EPAMSModel.FK__PeerEvalu__quest__282DF8C2" FromRole="PeerEvaluation" ToRole="Question" />
+          <Property Name="SessionID" Type="Int32" />
+          <NavigationProperty Name="Session" Relationship="EPAMSModel.FKSessionID" FromRole="PeerEvaluation" ToRole="Session" />
         </EntityType>
         <EntityType Name="PeerEvaluator">
           <Key>
@@ -780,6 +816,8 @@
           <NavigationProperty Name="SessionKPIWeights" Relationship="Self.FK__SessionKP__Sessi__6D0D32F4" FromRole="Session" ToRole="SessionKPIWeight" />
           <NavigationProperty Name="Students" Relationship="Self.FK__Student__admissi__4BAC3F29" FromRole="Session" ToRole="Student" />
           <NavigationProperty Name="EmployeSessionKPIs" Relationship="EPAMSModel.FK__EmployeSe__Sessi__7849DB76" FromRole="Session" ToRole="EmployeSessionKPI" />
+          <NavigationProperty Name="StudentEvaluations" Relationship="EPAMSModel.FK_SessionID" FromRole="Session" ToRole="StudentEvaluation" />
+          <NavigationProperty Name="PeerEvaluations" Relationship="EPAMSModel.FKSessionID" FromRole="Session" ToRole="PeerEvaluation" />
         </EntityType>
         <EntityType Name="SessionKPIWeight">
           <Key>
@@ -818,6 +856,8 @@
           <NavigationProperty Name="Question" Relationship="EPAMSModel.FK_StudentEvaluation_Questions" FromRole="StudentEvaluation" ToRole="Question" />
           <Property Name="StudentId" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Student" Relationship="EPAMSModel.FK_StudentEvaluation_Student" FromRole="StudentEvaluation" ToRole="Student" />
+          <Property Name="SessionID" Type="Int32" />
+          <NavigationProperty Name="Session" Relationship="EPAMSModel.FK_SessionID" FromRole="StudentEvaluation" ToRole="Session" />
         </EntityType>
         <EntityType Name="SubKPI">
           <Key>
@@ -1273,6 +1313,14 @@
             <End Role="User" EntitySet="Users" />
             <End Role="KPIScore" EntitySet="KPIScores" />
           </AssociationSet>
+          <AssociationSet Name="FK_SessionID" Association="EPAMSModel.FK_SessionID">
+            <End Role="Session" EntitySet="Sessions" />
+            <End Role="StudentEvaluation" EntitySet="StudentEvaluations" />
+          </AssociationSet>
+          <AssociationSet Name="FKSessionID" Association="EPAMSModel.FKSessionID">
+            <End Role="Session" EntitySet="Sessions" />
+            <End Role="PeerEvaluation" EntitySet="PeerEvaluations" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Question">
           <Key>
@@ -1453,6 +1501,30 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_SessionID">
+          <End Type="EPAMSModel.Session" Role="Session" Multiplicity="0..1" />
+          <End Type="EPAMSModel.StudentEvaluation" Role="StudentEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Session">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="StudentEvaluation">
+              <PropertyRef Name="SessionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FKSessionID">
+          <End Type="EPAMSModel.Session" Role="Session" Multiplicity="0..1" />
+          <End Type="EPAMSModel.PeerEvaluation" Role="PeerEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Session">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="PeerEvaluation">
+              <PropertyRef Name="SessionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1508,6 +1580,7 @@
           <EntitySetMapping Name="PeerEvaluations">
             <EntityTypeMapping TypeName="EPAMSModel.PeerEvaluation">
               <MappingFragment StoreEntitySet="PeerEvaluation">
+                <ScalarProperty Name="SessionID" ColumnName="SessionID" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="evaluatorID" ColumnName="evaluatorID" />
                 <ScalarProperty Name="evaluateeID" ColumnName="evaluateeID" />
@@ -1566,6 +1639,7 @@
           <EntitySetMapping Name="StudentEvaluations">
             <EntityTypeMapping TypeName="EPAMSModel.StudentEvaluation">
               <MappingFragment StoreEntitySet="StudentEvaluation">
+                <ScalarProperty Name="SessionID" ColumnName="SessionID" />
                 <ScalarProperty Name="StudentId" ColumnName="StudentId" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="enrollmentID" ColumnName="enrollmentID" />

@@ -10,34 +10,46 @@ using System.Web.Http;
 
 namespace EPAMS.Controllers.Student
 {
+    [RoutePrefix("api/Student")]
     public class StudentDetailControllerController : ApiController
     {
-        [RoutePrefix("api/Student")]
-
-        public class StudentDetailController : ApiController
-        {
+      
             EPAMSEntities db = new EPAMSEntities();
 
             [HttpGet]
             [Route("GetStudentEnrollments/{studentId}")]
             public IHttpActionResult GetStudentEnrollments(string studentId)
             {
-                var result = db.Enrollments
-                    .Where(e => e.studentID == studentId)
+               // 🔹 Step 1: Get latest session(descending)
+            var latestSession = db.Sessions
+                .OrderByDescending(s => s.id)
+                .FirstOrDefault();
+
+                if (latestSession == null)
+                    return NotFound();
+
+                // 🔹 Step 2: Filter enrollments by student + latest session
+                var enrollment = db.Enrollments
+                    .Where(e => e.studentID == studentId && e.sessionID == latestSession.id)
                     .Select(e => new
                     {
                         EnrollmentID = e.id,
-                        CourseCode = e.Course.code,
+                        CourseCode = e.courseCode,
                         CourseTitle = e.Course.title,
+
+                        TeacherID = e.teacherID,
                         TeacherName = e.Teacher.name,
+
+                        SessionID = e.sessionID,
                         SessionName = e.Session.name
                     })
                     .ToList();
 
-                if (result.Count == 0)
-                    return NotFound();
+            if (!enrollment.Any())
+                return Ok(new List<object>());
 
-                return Ok(result);
+            return Ok(enrollment);
+
             }
 
             [HttpGet]
@@ -90,10 +102,18 @@ namespace EPAMS.Controllers.Student
             public IHttpActionResult SubmitStudentEvaluation(
      [FromBody] List<StudentEvaluation> evaluations)
             {
+                if (evaluations == null || !evaluations.Any())
+                    return BadRequest("Invalid submission");
+
                 try
                 {
-                    if (evaluations == null || !evaluations.Any())
-                        return BadRequest("Invalid submission");
+                    // ✅ Get latest session from DB
+                    var latestSession = db.Sessions
+                        .OrderByDescending(s => s.id)
+                        .FirstOrDefault();
+
+                    if (latestSession == null)
+                        return BadRequest("No active session found");
 
                     foreach (var e in evaluations)
                     {
@@ -102,7 +122,8 @@ namespace EPAMS.Controllers.Student
                             enrollmentID = e.enrollmentID,
                             questionID = e.questionID,
                             score = e.score,
-                            StudentId = e.StudentId
+                            StudentId = e.StudentId,
+                            SessionID = latestSession.id   // ✅ FIXED HERE
                         });
                     }
 
@@ -112,11 +133,10 @@ namespace EPAMS.Controllers.Student
                 }
                 catch (Exception ex)
                 {
-                    return Content(HttpStatusCode.InternalServerError, new
+                    return Ok(new
                     {
-                        error = ex.Message,
-                        inner = ex.InnerException?.Message,
-                        innerInner = ex.InnerException?.InnerException?.Message
+                        success = false,
+                        error = ex.Message
                     });
                 }
             }
@@ -128,8 +148,18 @@ namespace EPAMS.Controllers.Student
             [Route("GetSubmittedStudentEvaluations/{studentId}")]
             public IHttpActionResult GetSubmittedStudentEvaluations(string studentId)
             {
+                var latestSession = db.Sessions
+                .OrderByDescending(s => s.id)
+                .FirstOrDefault();
+
+                if (latestSession == null)
+                    return Ok(new List<int>());
+
                 var submitted = db.StudentEvaluations
-                    .Where(se => se.StudentId.Trim().ToLower() == studentId.Trim().ToLower())
+                    .Where(se =>
+                        se.StudentId.Trim().ToLower() == studentId.Trim().ToLower()
+                        && se.SessionID == latestSession.id   // ✅ FILTER BY SESSION
+                    )
                     .Select(se => se.enrollmentID)
                     .Distinct()
                     .ToList();
@@ -271,5 +301,5 @@ namespace EPAMS.Controllers.Student
 
 
 
-    }
+    
 }

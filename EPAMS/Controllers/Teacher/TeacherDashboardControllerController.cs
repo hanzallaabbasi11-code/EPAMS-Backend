@@ -90,51 +90,37 @@ namespace EPAMS.Controllers.Teacher
 
         [HttpPost]
         [Route("SubmitEvaluation")]
-        public IHttpActionResult SubmitEvaluation([FromBody] List<PeerEvaluationDTO> evaluations)
+        public IHttpActionResult SubmitEvaluation([FromBody] List<PeerEvaluation> evaluations)
         {
-            try
+            if (evaluations == null || !evaluations.Any())
+                return BadRequest("Invalid submission");
+
+            // Get latest session
+            var latestSession = db.Sessions
+                                  .OrderByDescending(s => s.id) // or CreatedDate
+                                  .FirstOrDefault();
+
+            if (latestSession == null)
+                return BadRequest("No active session found");
+
+            foreach (var eval in evaluations)
             {
-                if (evaluations == null || !evaluations.Any())
-                    return BadRequest("Invalid submission");
-
-                foreach (var eval in evaluations)
+                var record = new PeerEvaluation
                 {
-                    // Optional validation
-                    if (eval.evaluatorID <= 0 ||
-                        string.IsNullOrEmpty(eval.evaluateeID) ||
-                        eval.questionID <= 0 ||
-                        string.IsNullOrEmpty(eval.courseCode))
-                    {
-                        return BadRequest("Invalid data in submission");
-                    }
+                    evaluatorID = eval.evaluatorID,
+                    evaluateeID = eval.evaluateeID,
+                    questionID = eval.questionID,
+                    courseCode = eval.courseCode,
+                    score = eval.score,
+                    SessionID = latestSession.id // <-- store latest session
+                };
 
-                    var record = new PeerEvaluation
-                    {
-                        evaluatorID = eval.evaluatorID,
-                        evaluateeID = eval.evaluateeID,   // string
-                        questionID = eval.questionID,
-                        courseCode = eval.courseCode,
-                        score = eval.score
-                    };
-
-                    db.PeerEvaluations.Add(record);
-                }
-
-                db.SaveChanges();
-
-                return Ok(new
-                {
-                    success = true,
-                    message = "Evaluation submitted successfully"
-                });
-            }
-            catch (Exception ex)
-            {
-                var inner = ex.InnerException?.InnerException?.Message;
-                return Content(System.Net.HttpStatusCode.InternalServerError,
-                    inner ?? ex.ToString());
+                db.PeerEvaluations.Add(record);
             }
 
+            db.SaveChanges();
+
+            return Ok(new { success = true, sessionID = latestSession.id });
         }
 
 
