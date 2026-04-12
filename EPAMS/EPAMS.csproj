@@ -191,7 +191,7 @@
     <Compile Include="Controllers\Datacell\EnrollmentController.cs" />
     <Compile Include="Controllers\Director\EmailController.cs" />
     <Compile Include="Controllers\Director\QuestionnaireController.cs" />
-    <Compile Include="Controllers\Director\SeePerformanceController.cs" />
+    <Compile Include="Controllers\Director\PerformanceController.cs" />
     <Compile Include="Controllers\HOD\CourseManagementController.cs" />
     <Compile Include="Controllers\HOD\KPIController.cs" />
     <Compile Include="Controllers\HOD\PeerEvaluatorsController.cs" />
@@ -217,6 +217,7 @@
     </Compile>
     <Compile Include="Models\DTO\AddKpiDto.cs" />
     <Compile Include="Models\DTO\AddPeerEvaluatorDto.cs" />
+    <Compile Include="Models\DTO\CompareDTO.cs" />
     <Compile Include="Models\DTO\ConfidentialEvaluationDto.cs" />
     <Compile Include="Models\DTO\DynamicSubKpiDto.cs" />
     <Compile Include="Models\DTO\PerformanceDto.cs" />
