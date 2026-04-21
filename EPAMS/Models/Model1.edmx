@@ -161,6 +161,8 @@
           <Property Name="userID" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="name" Type="varchar" MaxLength="50" />
           <Property Name="department" Type="varchar" MaxLength="50" />
+          <Property Name="designation" Type="varchar" MaxLength="30" />
+          <Property Name="isPermanentEvaluator" Type="int" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -882,6 +884,8 @@
           <NavigationProperty Name="PeerEvaluations" Relationship="Self.FK__PeerEvalu__evalu__6383C8BA" FromRole="Teacher" ToRole="PeerEvaluation" />
           <NavigationProperty Name="PeerEvaluators" Relationship="Self.FK__PeerEvalu__teach__5EBF139D" FromRole="Teacher" ToRole="PeerEvaluator" />
           <NavigationProperty Name="User" Relationship="Self.FK__Teacher__userID__4E88ABD4" FromRole="Teacher" ToRole="Users" />
+          <Property Name="designation" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="isPermanentEvaluator" Type="Int32" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -1660,6 +1664,8 @@
           <EntitySetMapping Name="Teachers">
             <EntityTypeMapping TypeName="EPAMSModel.Teacher">
               <MappingFragment StoreEntitySet="Teacher">
+                <ScalarProperty Name="isPermanentEvaluator" ColumnName="isPermanentEvaluator" />
+                <ScalarProperty Name="designation" ColumnName="designation" />
                 <ScalarProperty Name="userID" ColumnName="userID" />
                 <ScalarProperty Name="name" ColumnName="name" />
                 <ScalarProperty Name="department" ColumnName="department" />

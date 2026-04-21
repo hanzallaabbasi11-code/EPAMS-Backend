@@ -27,6 +27,5 @@ namespace EPAMS.Models
         public virtual KPI KPI { get; set; }
         public virtual ICollection<SessionKPIWeight> SessionKPIWeights { get; set; }
         public virtual ICollection<EmployeSessionKPI> EmployeSessionKPIs { get; set; }
-        public int MaxScore { get; internal set; }
     }
 }

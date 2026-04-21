@@ -25,6 +25,8 @@ namespace EPAMS.Models
         public string userID { get; set; }
         public string name { get; set; }
         public string department { get; set; }
+        public string designation { get; set; }
+        public Nullable<int> isPermanentEvaluator { get; set; }
     
         public virtual ICollection<CourseAllocation> CourseAllocations { get; set; }
         public virtual ICollection<Enrollment> Enrollments { get; set; }
