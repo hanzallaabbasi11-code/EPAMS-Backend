@@ -44,5 +44,7 @@ namespace EPAMS.Models
         public DbSet<Email> Emails { get; set; }
         public DbSet<EmployeSessionKPI> EmployeSessionKPIs { get; set; }
         public DbSet<KPIScore> KPIScores { get; set; }
+        public DbSet<Society> Societies { get; set; }
+        public DbSet<SocietyAssignment> SocietyAssignments { get; set; }
     }
 }

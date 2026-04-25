@@ -59,6 +59,11 @@
         <AssociationConnector Association="EPAMSModel.FK__KPIScore__evalua__7E02B4CC" />
         <AssociationConnector Association="EPAMSModel.FK_SessionID" />
         <AssociationConnector Association="EPAMSModel.FKSessionID" />
+        <EntityTypeShape EntityType="EPAMSModel.Society" Width="1.5" PointX="3.75" PointY="22.25" />
+        <EntityTypeShape EntityType="EPAMSModel.SocietyAssignment" Width="1.5" PointX="6" PointY="18.75" />
+        <AssociationConnector Association="EPAMSModel.FK__SocietyAs__Sessi__336AA144" />
+        <AssociationConnector Association="EPAMSModel.FK__SocietyAs__Socie__32767D0B" />
+        <AssociationConnector Association="EPAMSModel.FK__SocietyAs__Teach__345EC57D" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

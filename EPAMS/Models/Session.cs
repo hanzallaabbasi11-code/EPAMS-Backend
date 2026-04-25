@@ -24,6 +24,7 @@ namespace EPAMS.Models
             this.EmployeSessionKPIs = new HashSet<EmployeSessionKPI>();
             this.StudentEvaluations = new HashSet<StudentEvaluation>();
             this.PeerEvaluations = new HashSet<PeerEvaluation>();
+            this.SocietyAssignments = new HashSet<SocietyAssignment>();
         }
     
         public int id { get; set; }
@@ -37,5 +38,6 @@ namespace EPAMS.Models
         public virtual ICollection<EmployeSessionKPI> EmployeSessionKPIs { get; set; }
         public virtual ICollection<StudentEvaluation> StudentEvaluations { get; set; }
         public virtual ICollection<PeerEvaluation> PeerEvaluations { get; set; }
+        public virtual ICollection<SocietyAssignment> SocietyAssignments { get; set; }
     }
 }

@@ -232,6 +232,8 @@
     <Compile Include="Models\DTO\QuestionCreateDto.cs" />
     <Compile Include="Models\DTO\QuestionnaireListDto.cs" />
     <Compile Include="Models\DTO\SaveQuestionnaireChangesDto.cs" />
+    <Compile Include="Models\DTO\SocietyAssignment.cs" />
+    <Compile Include="Models\DTO\SocietyDTO.cs" />
     <Compile Include="Models\DTO\ToggleQuestionnaireDto.cs" />
     <Compile Include="Models\Email.cs">
       <DependentUpon>Model1.tt</DependentUpon>
@@ -282,6 +284,12 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SessionKPIWeight.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Society.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SocietyAssignment.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Student.cs">

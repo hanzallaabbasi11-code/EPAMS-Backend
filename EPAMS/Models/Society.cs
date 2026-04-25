@@ -12,25 +12,17 @@ namespace EPAMS.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class User
+    public partial class Society
     {
-        public User()
+        public Society()
         {
-            this.KPIScores = new HashSet<KPIScore>();
-            this.KPIScores1 = new HashSet<KPIScore>();
             this.SocietyAssignments = new HashSet<SocietyAssignment>();
         }
     
-        public string id { get; set; }
-        public string password { get; set; }
-        public string role { get; set; }
-        public string profileImagePath { get; set; }
-        public Nullable<int> isActive { get; set; }
+        public int SocietyId { get; set; }
+        public string SocietyName { get; set; }
+        public string Description { get; set; }
     
-        public virtual Student Student { get; set; }
-        public virtual Teacher Teacher { get; set; }
-        public virtual ICollection<KPIScore> KPIScores { get; set; }
-        public virtual ICollection<KPIScore> KPIScores1 { get; set; }
         public virtual ICollection<SocietyAssignment> SocietyAssignments { get; set; }
     }
 }
