@@ -10,4 +10,10 @@ namespace EPAMS.Models.DTO
         public int SessionId { get; set; }
         public List<string> UserIDs { get; set; }
     }
+
+    public class TogglePermanentDto
+    {
+        public string UserID { get; set; }
+        public bool IsPermanent { get; set; } // True = Permanent banado, False = Hatado
+    }
 }

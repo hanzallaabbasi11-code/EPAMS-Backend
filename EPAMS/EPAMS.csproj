@@ -201,6 +201,7 @@
     <Compile Include="Controllers\HOD\CourseManagementController.cs" />
     <Compile Include="Controllers\HOD\KPIController.cs" />
     <Compile Include="Controllers\HOD\PeerEvaluatorsController.cs" />
+    <Compile Include="Controllers\HOD\SocietyEvaluationController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Login\UsersController.cs" />
     <Compile Include="Controllers\Student\CourseController.cs" />
@@ -226,7 +227,9 @@
     <Compile Include="Models\DTO\BulkPermanentDto.cs" />
     <Compile Include="Models\DTO\CompareDTO.cs" />
     <Compile Include="Models\DTO\ConfidentialEvaluationDto.cs" />
+    <Compile Include="Models\DTO\CourseManagementDto.cs" />
     <Compile Include="Models\DTO\DynamicSubKpiDto.cs" />
+    <Compile Include="Models\DTO\PeerEvaluationDto.cs" />
     <Compile Include="Models\DTO\PeerSubmissionModel.cs" />
     <Compile Include="Models\DTO\PerformanceDto.cs" />
     <Compile Include="Models\DTO\QuestionCreateDto.cs" />
@@ -234,6 +237,7 @@
     <Compile Include="Models\DTO\SaveQuestionnaireChangesDto.cs" />
     <Compile Include="Models\DTO\SocietyAssignment.cs" />
     <Compile Include="Models\DTO\SocietyDTO.cs" />
+    <Compile Include="Models\DTO\SocietyEvaluationDTO.cs" />
     <Compile Include="Models\DTO\ToggleQuestionnaireDto.cs" />
     <Compile Include="Models\Email.cs">
       <DependentUpon>Model1.tt</DependentUpon>
@@ -290,6 +294,9 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\SocietyAssignment.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\SocietyEvaluation.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Student.cs">

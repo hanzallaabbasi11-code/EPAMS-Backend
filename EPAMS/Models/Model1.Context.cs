@@ -46,5 +46,6 @@ namespace EPAMS.Models
         public DbSet<KPIScore> KPIScores { get; set; }
         public DbSet<Society> Societies { get; set; }
         public DbSet<SocietyAssignment> SocietyAssignments { get; set; }
+        public DbSet<SocietyEvaluation> SocietyEvaluations { get; set; }
     }
 }

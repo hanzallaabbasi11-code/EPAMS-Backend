@@ -146,6 +146,19 @@
           <Property Name="IsChairperson" Type="bit" />
           <Property Name="IsMentor" Type="bit" />
         </EntityType>
+        <EntityType Name="SocietyEvaluation">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EvaluatorId" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="EvaluateeId" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="SocietyId" Type="int" Nullable="false" />
+          <Property Name="QuestionId" Type="int" Nullable="false" />
+          <Property Name="Score" Type="int" Nullable="false" />
+          <Property Name="SessionId" Type="int" Nullable="false" />
+          <Property Name="EvaluationType" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
         <EntityType Name="Student">
           <Key>
             <PropertyRef Name="userID" />
@@ -553,6 +566,66 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_SocietyEvaluation_Evaluatee">
+          <End Role="Teacher" Type="Self.Teacher" Multiplicity="1" />
+          <End Role="SocietyEvaluation" Type="Self.SocietyEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Teacher">
+              <PropertyRef Name="userID" />
+            </Principal>
+            <Dependent Role="SocietyEvaluation">
+              <PropertyRef Name="EvaluateeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SocietyEvaluation_Evaluator">
+          <End Role="Teacher" Type="Self.Teacher" Multiplicity="1" />
+          <End Role="SocietyEvaluation" Type="Self.SocietyEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Teacher">
+              <PropertyRef Name="userID" />
+            </Principal>
+            <Dependent Role="SocietyEvaluation">
+              <PropertyRef Name="EvaluatorId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SocietyEvaluation_Question">
+          <End Role="Questions" Type="Self.Questions" Multiplicity="1" />
+          <End Role="SocietyEvaluation" Type="Self.SocietyEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Questions">
+              <PropertyRef Name="QuestionID" />
+            </Principal>
+            <Dependent Role="SocietyEvaluation">
+              <PropertyRef Name="QuestionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SocietyEvaluation_Session">
+          <End Role="Session" Type="Self.Session" Multiplicity="1" />
+          <End Role="SocietyEvaluation" Type="Self.SocietyEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Session">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="SocietyEvaluation">
+              <PropertyRef Name="SessionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SocietyEvaluation_Society">
+          <End Role="Societies" Type="Self.Societies" Multiplicity="1" />
+          <End Role="SocietyEvaluation" Type="Self.SocietyEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Societies">
+              <PropertyRef Name="SocietyId" />
+            </Principal>
+            <Dependent Role="SocietyEvaluation">
+              <PropertyRef Name="SocietyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Student_userID">
           <End Role="Users" Type="Self.Users" Multiplicity="1" />
           <End Role="Student" Type="Self.Student" Multiplicity="0..1" />
@@ -630,6 +703,7 @@
           <EntitySet Name="SessionKPIWeight" EntityType="Self.SessionKPIWeight" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Societies" EntityType="Self.Societies" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SocietyAssignments" EntityType="Self.SocietyAssignments" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SocietyEvaluation" EntityType="Self.SocietyEvaluation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Student" EntityType="Self.Student" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="StudentEvaluation" EntityType="Self.StudentEvaluation" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubKPI" EntityType="Self.SubKPI" Schema="dbo" store:Type="Tables" />
@@ -754,6 +828,26 @@
           <AssociationSet Name="FK_SessionID" Association="Self.FK_SessionID">
             <End Role="Session" EntitySet="Session" />
             <End Role="StudentEvaluation" EntitySet="StudentEvaluation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SocietyEvaluation_Evaluatee" Association="Self.FK_SocietyEvaluation_Evaluatee">
+            <End Role="Teacher" EntitySet="Teacher" />
+            <End Role="SocietyEvaluation" EntitySet="SocietyEvaluation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SocietyEvaluation_Evaluator" Association="Self.FK_SocietyEvaluation_Evaluator">
+            <End Role="Teacher" EntitySet="Teacher" />
+            <End Role="SocietyEvaluation" EntitySet="SocietyEvaluation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SocietyEvaluation_Question" Association="Self.FK_SocietyEvaluation_Question">
+            <End Role="Questions" EntitySet="Questions" />
+            <End Role="SocietyEvaluation" EntitySet="SocietyEvaluation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SocietyEvaluation_Session" Association="Self.FK_SocietyEvaluation_Session">
+            <End Role="Session" EntitySet="Session" />
+            <End Role="SocietyEvaluation" EntitySet="SocietyEvaluation" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SocietyEvaluation_Society" Association="Self.FK_SocietyEvaluation_Society">
+            <End Role="Societies" EntitySet="Societies" />
+            <End Role="SocietyEvaluation" EntitySet="SocietyEvaluation" />
           </AssociationSet>
           <AssociationSet Name="FK_Student_userID" Association="Self.FK_Student_userID">
             <End Role="Users" EntitySet="Users" />
@@ -890,6 +984,7 @@
           <NavigationProperty Name="StudentEvaluations" Relationship="EPAMSModel.FK_SessionID" FromRole="Session" ToRole="StudentEvaluation" />
           <NavigationProperty Name="PeerEvaluations" Relationship="EPAMSModel.FKSessionID" FromRole="Session" ToRole="PeerEvaluation" />
           <NavigationProperty Name="SocietyAssignments" Relationship="EPAMSModel.FK__SocietyAs__Sessi__336AA144" FromRole="Session" ToRole="SocietyAssignment" />
+          <NavigationProperty Name="SocietyEvaluations" Relationship="EPAMSModel.FK_SocietyEvaluation_Session" FromRole="Session" ToRole="SocietyEvaluation" />
         </EntityType>
         <EntityType Name="SessionKPIWeight">
           <Key>
@@ -956,6 +1051,8 @@
           <NavigationProperty Name="User" Relationship="Self.FK__Teacher__userID__4E88ABD4" FromRole="Teacher" ToRole="Users" />
           <Property Name="designation" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
           <Property Name="isPermanentEvaluator" Type="Int32" />
+          <NavigationProperty Name="SocietyEvaluations" Relationship="EPAMSModel.FK_SocietyEvaluation_Evaluatee" FromRole="Teacher" ToRole="SocietyEvaluation" />
+          <NavigationProperty Name="SocietyEvaluations1" Relationship="EPAMSModel.FK_SocietyEvaluation_Evaluator" FromRole="Teacher" ToRole="SocietyEvaluation" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -1410,6 +1507,27 @@
             <End Role="User" EntitySet="Users" />
             <End Role="SocietyAssignment" EntitySet="SocietyAssignments" />
           </AssociationSet>
+          <EntitySet Name="SocietyEvaluations" EntityType="EPAMSModel.SocietyEvaluation" />
+          <AssociationSet Name="FK_SocietyEvaluation_Question" Association="EPAMSModel.FK_SocietyEvaluation_Question">
+            <End Role="Question" EntitySet="Questions" />
+            <End Role="SocietyEvaluation" EntitySet="SocietyEvaluations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SocietyEvaluation_Session" Association="EPAMSModel.FK_SocietyEvaluation_Session">
+            <End Role="Session" EntitySet="Sessions" />
+            <End Role="SocietyEvaluation" EntitySet="SocietyEvaluations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SocietyEvaluation_Society" Association="EPAMSModel.FK_SocietyEvaluation_Society">
+            <End Role="Society" EntitySet="Societies" />
+            <End Role="SocietyEvaluation" EntitySet="SocietyEvaluations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SocietyEvaluation_Evaluatee" Association="EPAMSModel.FK_SocietyEvaluation_Evaluatee">
+            <End Role="Teacher" EntitySet="Teachers" />
+            <End Role="SocietyEvaluation" EntitySet="SocietyEvaluations" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SocietyEvaluation_Evaluator" Association="EPAMSModel.FK_SocietyEvaluation_Evaluator">
+            <End Role="Teacher" EntitySet="Teachers" />
+            <End Role="SocietyEvaluation" EntitySet="SocietyEvaluations" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Question">
           <Key>
@@ -1421,6 +1539,7 @@
           <NavigationProperty Name="Questionare" Relationship="EPAMSModel.FK_Questions_Questionare" FromRole="Question" ToRole="Questionare" />
           <NavigationProperty Name="PeerEvaluations" Relationship="EPAMSModel.FK__PeerEvalu__quest__282DF8C2" FromRole="Question" ToRole="PeerEvaluation" />
           <NavigationProperty Name="StudentEvaluations" Relationship="EPAMSModel.FK_StudentEvaluation_Questions" FromRole="Question" ToRole="StudentEvaluation" />
+          <NavigationProperty Name="SocietyEvaluations" Relationship="EPAMSModel.FK_SocietyEvaluation_Question" FromRole="Question" ToRole="SocietyEvaluation" />
         </EntityType>
         <Association Name="FK_Questions_Questionare">
           <End Type="EPAMSModel.Questionare" Role="Questionare" Multiplicity="1" />
@@ -1622,6 +1741,7 @@
           <Property Name="SocietyName" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="SocietyAssignments" Relationship="EPAMSModel.FK__SocietyAs__Socie__32767D0B" FromRole="Society" ToRole="SocietyAssignment" />
+          <NavigationProperty Name="SocietyEvaluations" Relationship="EPAMSModel.FK_SocietyEvaluation_Society" FromRole="Society" ToRole="SocietyEvaluation" />
         </EntityType>
         <EntityType Name="SocietyAssignment">
           <Key>
@@ -1670,6 +1790,84 @@
             </Principal>
             <Dependent Role="SocietyAssignment">
               <PropertyRef Name="TeacherId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="SocietyEvaluation">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EvaluatorId" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="EvaluateeId" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="SocietyId" Type="Int32" Nullable="false" />
+          <Property Name="QuestionId" Type="Int32" Nullable="false" />
+          <Property Name="Score" Type="Int32" Nullable="false" />
+          <Property Name="SessionId" Type="Int32" Nullable="false" />
+          <Property Name="EvaluationType" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Question" Relationship="EPAMSModel.FK_SocietyEvaluation_Question" FromRole="SocietyEvaluation" ToRole="Question" />
+          <NavigationProperty Name="Session" Relationship="EPAMSModel.FK_SocietyEvaluation_Session" FromRole="SocietyEvaluation" ToRole="Session" />
+          <NavigationProperty Name="Society" Relationship="EPAMSModel.FK_SocietyEvaluation_Society" FromRole="SocietyEvaluation" ToRole="Society" />
+          <NavigationProperty Name="Teacher" Relationship="EPAMSModel.FK_SocietyEvaluation_Evaluatee" FromRole="SocietyEvaluation" ToRole="Teacher" />
+          <NavigationProperty Name="Teacher1" Relationship="EPAMSModel.FK_SocietyEvaluation_Evaluator" FromRole="SocietyEvaluation" ToRole="Teacher" />
+        </EntityType>
+        <Association Name="FK_SocietyEvaluation_Question">
+          <End Type="EPAMSModel.Question" Role="Question" Multiplicity="1" />
+          <End Type="EPAMSModel.SocietyEvaluation" Role="SocietyEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Question">
+              <PropertyRef Name="QuestionID" />
+            </Principal>
+            <Dependent Role="SocietyEvaluation">
+              <PropertyRef Name="QuestionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SocietyEvaluation_Session">
+          <End Type="EPAMSModel.Session" Role="Session" Multiplicity="1" />
+          <End Type="EPAMSModel.SocietyEvaluation" Role="SocietyEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Session">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="SocietyEvaluation">
+              <PropertyRef Name="SessionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SocietyEvaluation_Society">
+          <End Type="EPAMSModel.Society" Role="Society" Multiplicity="1" />
+          <End Type="EPAMSModel.SocietyEvaluation" Role="SocietyEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Society">
+              <PropertyRef Name="SocietyId" />
+            </Principal>
+            <Dependent Role="SocietyEvaluation">
+              <PropertyRef Name="SocietyId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SocietyEvaluation_Evaluatee">
+          <End Type="EPAMSModel.Teacher" Role="Teacher" Multiplicity="1" />
+          <End Type="EPAMSModel.SocietyEvaluation" Role="SocietyEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Teacher">
+              <PropertyRef Name="userID" />
+            </Principal>
+            <Dependent Role="SocietyEvaluation">
+              <PropertyRef Name="EvaluateeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SocietyEvaluation_Evaluator">
+          <End Type="EPAMSModel.Teacher" Role="Teacher" Multiplicity="1" />
+          <End Type="EPAMSModel.SocietyEvaluation" Role="SocietyEvaluation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Teacher">
+              <PropertyRef Name="userID" />
+            </Principal>
+            <Dependent Role="SocietyEvaluation">
+              <PropertyRef Name="EvaluatorId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1885,6 +2083,20 @@
                 <ScalarProperty Name="SocietyId" ColumnName="SocietyId" />
                 <ScalarProperty Name="TeacherId" ColumnName="TeacherId" />
                 <ScalarProperty Name="AssignmentId" ColumnName="AssignmentId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SocietyEvaluations">
+            <EntityTypeMapping TypeName="EPAMSModel.SocietyEvaluation">
+              <MappingFragment StoreEntitySet="SocietyEvaluation">
+                <ScalarProperty Name="EvaluationType" ColumnName="EvaluationType" />
+                <ScalarProperty Name="SessionId" ColumnName="SessionId" />
+                <ScalarProperty Name="Score" ColumnName="Score" />
+                <ScalarProperty Name="QuestionId" ColumnName="QuestionId" />
+                <ScalarProperty Name="SocietyId" ColumnName="SocietyId" />
+                <ScalarProperty Name="EvaluateeId" ColumnName="EvaluateeId" />
+                <ScalarProperty Name="EvaluatorId" ColumnName="EvaluatorId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

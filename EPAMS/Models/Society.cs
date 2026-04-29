@@ -17,6 +17,7 @@ namespace EPAMS.Models
         public Society()
         {
             this.SocietyAssignments = new HashSet<SocietyAssignment>();
+            this.SocietyEvaluations = new HashSet<SocietyEvaluation>();
         }
     
         public int SocietyId { get; set; }
@@ -24,5 +25,6 @@ namespace EPAMS.Models
         public string Description { get; set; }
     
         public virtual ICollection<SocietyAssignment> SocietyAssignments { get; set; }
+        public virtual ICollection<SocietyEvaluation> SocietyEvaluations { get; set; }
     }
 }

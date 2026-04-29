@@ -12,6 +12,8 @@ namespace EPAMS.Models.DTO
         public string EvaluateeId { get; set; }
         public string CourseCode { get; set; }
         public List<AnswerDto> Answers { get; set; }
+
+        public int SessionID { get; set; }
     }
 
     public class AnswerDto

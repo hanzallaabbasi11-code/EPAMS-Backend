@@ -18,6 +18,7 @@ namespace EPAMS.Models
         {
             this.PeerEvaluations = new HashSet<PeerEvaluation>();
             this.StudentEvaluations = new HashSet<StudentEvaluation>();
+            this.SocietyEvaluations = new HashSet<SocietyEvaluation>();
         }
     
         public int QuestionID { get; set; }
@@ -27,5 +28,6 @@ namespace EPAMS.Models
         public virtual Questionare Questionare { get; set; }
         public virtual ICollection<PeerEvaluation> PeerEvaluations { get; set; }
         public virtual ICollection<StudentEvaluation> StudentEvaluations { get; set; }
+        public virtual ICollection<SocietyEvaluation> SocietyEvaluations { get; set; }
     }
 }

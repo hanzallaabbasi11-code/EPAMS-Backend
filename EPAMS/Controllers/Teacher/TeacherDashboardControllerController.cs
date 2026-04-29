@@ -82,35 +82,73 @@ namespace EPAMS.Controllers.Teacher
         {
             try
             {
-                var teacherProfile = db.Teachers.FirstOrDefault(t => t.userID.Trim().ToLower() == userId.Trim().ToLower());
-                if (teacherProfile == null) return BadRequest("Teacher record not found.");
+                var evaluator = db.Teachers
+                    .FirstOrDefault(t => t.userID.Trim().ToLower() == userId.Trim().ToLower());
+
+                if (evaluator == null)
+                    return BadRequest("Teacher not found");
+
+                Dictionary<string, int> ranks = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "Professor", 3 },
+            { "Assistent Professor", 2 },
+            { "Senior Lecturer", 1 },
+            { "Junior Lecturer", 0 }
+        };
+
+                int evaluatorRank = ranks.ContainsKey(evaluator.designation)
+                    ? ranks[evaluator.designation]
+                    : -1;
 
                 IQueryable<Enrollment> enrollmentQuery = db.Enrollments;
 
-                // Session filtering for non-permanent evaluators
-                if (teacherProfile.isPermanentEvaluator != 1)
+                if (evaluator.isPermanentEvaluator != 1)
                 {
-                    var sessionAuth = db.PeerEvaluators.FirstOrDefault(pe => pe.teacherID.Trim().ToLower() == userId.Trim().ToLower());
-                    if (sessionAuth == null) return Ok(new List<object>());
+                    var sessionAuth = db.PeerEvaluators
+                        .FirstOrDefault(pe => pe.teacherID.Trim().ToLower() == userId.Trim().ToLower());
+
+                    if (sessionAuth == null)
+                        return Ok(new List<object>());
+
                     enrollmentQuery = enrollmentQuery.Where(e => e.sessionID == sessionAuth.sessionID);
                 }
 
-                var data = enrollmentQuery
+                var teachers = enrollmentQuery
                     .GroupBy(e => e.teacherID)
                     .Select(g => new
                     {
                         TeacherID = g.Key,
-                        TeacherName = db.Teachers.Where(t => t.userID == g.Key).Select(t => t.name).FirstOrDefault(),
-                        Designation = db.Teachers.Where(t => t.userID == g.Key).Select(t => t.designation).FirstOrDefault(), // Rank check ke liye
-                        SessionID = g.FirstOrDefault().sessionID,
+                        TeacherName = db.Teachers
+                            .Where(t => t.userID == g.Key)
+                            .Select(t => t.name)
+                            .FirstOrDefault(),
+
+                        Designation = db.Teachers
+                            .Where(t => t.userID == g.Key)
+                            .Select(t => t.designation)
+                            .FirstOrDefault(),
+
                         Courses = g.Select(x => x.courseCode).Distinct().ToList()
-                    }).ToList();
+                    })
+                    .ToList();
 
-                return Ok(data);
+                var filtered = teachers.Where(t =>
+                {
+                    if (!ranks.ContainsKey(t.Designation))
+                        return false;
+
+                    int targetRank = ranks[t.Designation];
+
+                    return evaluatorRank > targetRank;
+                }).ToList();
+
+                return Ok(filtered);
             }
-            catch (Exception ex) { return InternalServerError(ex); }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
-
 
         [HttpGet]
         [Route("IsEvaluator")]
@@ -162,52 +200,72 @@ namespace EPAMS.Controllers.Teacher
         //}
 
 
-
         [HttpPost]
         [Route("SubmitEvaluation")]
         public IHttpActionResult SubmitEvaluation([FromBody] PeerSubmissionModel model)
         {
-            if (model == null || model.Answers == null) return BadRequest("Invalid Data");
-
             try
             {
-                // 1. Check karein ke kya user PeerEvaluator table mein hai?
+                if (model == null || model.Answers == null || !model.Answers.Any())
+                    return BadRequest("Invalid Data");
+
+                var userId = (model.EvaluatorUserId ?? "").Trim().ToLower();
+
                 var sessionEvaluator = db.PeerEvaluators
-                    .FirstOrDefault(pe => pe.teacherID.Trim().ToLower() == model.EvaluatorUserId.Trim().ToLower());
+                    .FirstOrDefault(pe => pe.teacherID != null &&
+                                          pe.teacherID.Trim().ToLower() == userId);
 
-                // 2. Check karein ke kya user Teacher table mein Permanent hai?
                 var permanentTeacher = db.Teachers
-                    .FirstOrDefault(t => t.userID.Trim().ToLower() == model.EvaluatorUserId.Trim().ToLower()
-                                    && t.isPermanentEvaluator == 1);
+                    .FirstOrDefault(t => t.userID != null &&
+                                         t.userID.Trim().ToLower() == userId &&
+                                         t.isPermanentEvaluator == 1);
 
-                // Agar dono jagah record nahi milta, toh hi error dein
                 if (sessionEvaluator == null && permanentTeacher == null)
-                {
                     return BadRequest("Unauthorized: You are not an assigned evaluator.");
-                }
+
+                // ✅ FIX: get session automatically if null
+                int sessionId =  db.Sessions
+                                                    .OrderByDescending(s => s.id)
+                                                    .Select(s => s.id)
+                                                    .FirstOrDefault();
+
+                int? evaluatorId = sessionEvaluator?.id;
+
+                // Duplicate check
+                var alreadySubmitted = db.PeerEvaluations.Any(p =>
+                    p.evaluateeID == model.EvaluateeId &&
+                    p.courseCode == model.CourseCode &&
+                    p.SessionID == sessionId &&
+                    p.evaluatorID == evaluatorId
+                );
+
+                if (alreadySubmitted)
+                    return BadRequest("Already submitted for this session.");
 
                 foreach (var ans in model.Answers)
                 {
-                    db.PeerEvaluations.Add(new PeerEvaluation
+                    var record = new PeerEvaluation
                     {
-                        // Agar session-based hai toh uski ID lagayein, 
-                        // Agar Permanent hai toh yahan logic dekhein (evaluatorID agar null allow karta hai toh null bhejain)
-                        evaluatorID = sessionEvaluator?.id,
+                        evaluatorID = evaluatorId,
                         evaluateeID = model.EvaluateeId,
                         questionID = ans.QuestionId,
                         courseCode = model.CourseCode,
-                        score = ans.Score
-                    });
+                        score = ans.Score,
+                        SessionID = sessionId
+                    };
+
+                    db.PeerEvaluations.Add(record);
                 }
 
                 db.SaveChanges();
+
                 return Ok(new { success = true });
             }
-            catch (Exception ex) { return InternalServerError(ex); }
+            catch (Exception ex)
+            {
+                return Content(System.Net.HttpStatusCode.InternalServerError, ex.ToString());
+            }
         }
-
-
-
 
 
 

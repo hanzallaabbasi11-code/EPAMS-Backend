@@ -23,13 +23,13 @@ namespace EPAMS.Controllers.HOD
                 {
                     t.userID,
                     t.name,
-                    t.department
+                    t.department,
+                    isPermanentEvaluator = t.isPermanentEvaluator
                 })
                 .ToList();
 
             return Ok(teachers);
         }
-
 
         [HttpGet]
         [Route("Sessions")]
@@ -142,7 +142,8 @@ namespace EPAMS.Controllers.HOD
         }
 
         // 8. Bulk Permanent Assignment (Extra: Multiple teachers ke liye)
-        [HttpPost]
+
+ [HttpPost]
 [Route("SetBulkPermanent")]
 public IHttpActionResult SetBulkPermanent(BulkPermanentDto model)
 {
