@@ -201,55 +201,36 @@ namespace EPAMS.Controllers.Student
                         .Where(q => questionIds.Contains(q.QuestionID))
                         .ToList();
 
-                    // 🔹 Build Email Body
 
-                    //string body = "";
-                    //body += "CONFIDENTIAL EVALUATION\n\n";
-                    //body += "Student: " + student?.name + "\n";
-                    //body += "Teacher: " + teacher?.name + "\n";
-                    //body += "Course: " + course?.title + "\n";
-                    //body += "Date: " + DateTime.Now + "\n\n";
-                    //body += "-----------------------------\n";
-                    //body += "Questions & Answers\n";
-                    //body += "-----------------------------\n\n";
-
-                    //foreach (var ans in model.Answers)
-                    //{
-                    //    var question = questions
-                    //        .FirstOrDefault(q => q.QuestionID == ans.questionId);
-
-                    //    body += "Q: " + question?.QuestionText + "\n";
-                    //    body += "Score: " + ans.score + "\n\n";
-                    //}
-
-                    var emailObject = new
+                var emailObject = new
+                {
+                    studentId = model.StudentId,
+                    teacherId = teacher?.userID,
+                    session = enrollment.Session.name,
+                    subjectCode = enrollment.courseCode,
+                    submittedOn = DateTime.Now,
+                    evaluation = model.Answers.Select(a =>
                     {
-                        studentId = model.StudentId,
-                        teacherId = teacher?.userID,
-                        session = enrollment.Session.name,
-                        subjectCode = enrollment.courseCode,
-                        submittedOn = DateTime.Now,
-                        evaluation = model.Answers.Select(a =>
+                        var question = questions
+                            .FirstOrDefault(q => q.QuestionID == a.questionId);
+
+                        return new
                         {
-                            var question = questions
-                                .FirstOrDefault(q => q.QuestionID == a.questionId);
+                            qId = a.questionId,
+                            questionText = question?.QuestionText,
+                            score = a.score
+                        };
+                    }).ToList()
+                };
 
-                            return new
-                            {
-                                qId = a.questionId,
-                                questionText = question?.QuestionText,
-                                score = a.score
-                            };
-                        }).ToList()
-                    };
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(emailObject, Newtonsoft.Json.Formatting.Indented);
 
-                    string body = Newtonsoft.Json.JsonConvert.SerializeObject(emailObject, Newtonsoft.Json.Formatting.Indented);
+                // 🔥 ADD MARKERS HERE
+                string body = $"START_EVAL\n{json}\nEND_EVAL";
 
+                SendEmail(body);
 
-
-                    SendEmail(body);
-
-                    return Ok(new { success = true });
+                return Ok(new { success = true });
                 }
                 catch (Exception ex)
                 {

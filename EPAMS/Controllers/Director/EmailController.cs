@@ -21,8 +21,14 @@ namespace EPAMS.Controllers.Director
         public IHttpActionResult GetAllEmails()
         {
             var emails = db.Emails
-                           .OrderByDescending(x => x.id)
-                           .ToList();
+                .Select(x => new
+                {
+                    x.id,
+                    x.mail,
+                    x.isActive
+                })
+                .OrderByDescending(x => x.id)
+                .ToList();
 
             return Ok(emails);
         }
@@ -50,10 +56,10 @@ namespace EPAMS.Controllers.Director
         [Route("add")]
         public IHttpActionResult AddEmail(Email model)
         {
-            if (model == null || string.IsNullOrEmpty(model.mail))
-                return BadRequest("Email is required.");
+            if (model == null || string.IsNullOrEmpty(model.mail) || string.IsNullOrEmpty(model.password))
+                return BadRequest("Email and App Password are required.");
 
-            model.isActive = false; // Always add as inactive
+            model.isActive = false;
 
             db.Emails.Add(model);
             db.SaveChanges();
