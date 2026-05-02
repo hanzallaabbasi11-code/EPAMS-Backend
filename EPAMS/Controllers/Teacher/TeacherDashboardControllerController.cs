@@ -51,98 +51,91 @@ namespace EPAMS.Controllers.Teacher
         }
 
 
-        // GET: api/TeacherDashboard/GetTeachersWithCourses
-        //[HttpGet]
-        //[Route("GetTeachersWithCourses")]
-        //public IHttpActionResult GetTeachersWithCourses()
-        //{
-        //    var data = db.Enrollments
-        //        .GroupBy(e => e.teacherID)
-        //        .Select(g => new
-        //        {
-        //            TeacherID = g.Key,
-        //            TeacherName = db.Teachers
-        //                .Where(t => t.userID == g.Key)
-        //                .Select(t => t.name)
-        //                .FirstOrDefault(),
+       
 
-        //            Courses = g
-        //                .Select(x => x.courseCode)
-        //                .Distinct()
-        //                .ToList()
-        //        })
-        //        .ToList();
 
-        //    return Ok(data);
-        //}
+        private int GetDesignationRank(string designation)
+        {
+            if (string.IsNullOrWhiteSpace(designation))
+                return 0;
+
+            switch (designation.Trim().ToLower())
+            {
+                case "hod": return 5;                  // 🔥 highest
+                case "professor": return 4;
+                case "assistant professor": return 3;
+                case "teacher": return 2;
+                case "junior teacher": return 1;
+                default: return 0;
+            }
+        }
 
         [HttpGet]
-        [Route("GetTeachersWithCourses/{userId}")]
+        [Route("GetTeachersWithCourses")]
         public IHttpActionResult GetTeachersWithCourses(string userId)
         {
             try
             {
-                var evaluator = db.Teachers
-                    .FirstOrDefault(t => t.userID.Trim().ToLower() == userId.Trim().ToLower());
+                if (string.IsNullOrWhiteSpace(userId))
+                    return BadRequest("UserId is required");
 
-                if (evaluator == null)
-                    return BadRequest("Teacher not found");
+                string normalizedUserId = userId.Trim().ToLower();
 
-                Dictionary<string, int> ranks = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
-        {
-            { "Professor", 3 },
-            { "Assistent Professor", 2 },
-            { "Senior Lecturer", 1 },
-            { "Junior Lecturer", 0 }
-        };
+                // 🔹 Current Teacher
+                var currentTeacher = db.Teachers
+                    .FirstOrDefault(t => t.userID.Trim().ToLower() == normalizedUserId);
 
-                int evaluatorRank = ranks.ContainsKey(evaluator.designation)
-                    ? ranks[evaluator.designation]
-                    : -1;
+                if (currentTeacher == null)
+                    return Ok(new List<object>());
 
-                IQueryable<Enrollment> enrollmentQuery = db.Enrollments;
+                int currentRank = GetDesignationRank(currentTeacher.designation);
 
-                if (evaluator.isPermanentEvaluator != 1)
-                {
-                    var sessionAuth = db.PeerEvaluators
-                        .FirstOrDefault(pe => pe.teacherID.Trim().ToLower() == userId.Trim().ToLower());
-
-                    if (sessionAuth == null)
-                        return Ok(new List<object>());
-
-                    enrollmentQuery = enrollmentQuery.Where(e => e.sessionID == sessionAuth.sessionID);
-                }
-
-                var teachers = enrollmentQuery
+                var data = db.Enrollments
                     .GroupBy(e => e.teacherID)
                     .Select(g => new
                     {
                         TeacherID = g.Key,
-                        TeacherName = db.Teachers
+                        TeacherInfo = db.Teachers
                             .Where(t => t.userID == g.Key)
-                            .Select(t => t.name)
+                            .Select(t => new
+                            {
+                                t.name,
+                                t.designation
+                            })
                             .FirstOrDefault(),
 
-                        Designation = db.Teachers
-                            .Where(t => t.userID == g.Key)
-                            .Select(t => t.designation)
-                            .FirstOrDefault(),
+                        Courses = g
+                            .Select(x => x.courseCode)
+                            .Distinct()
+                            .ToList()
+                    })
+                    .ToList()
 
-                        Courses = g.Select(x => x.courseCode).Distinct().ToList()
+                    // 🔥 FILTER LOGIC
+                    .Where(t =>
+                    {
+                        if (t.TeacherInfo == null)
+                            return false;
+
+                        int targetRank = GetDesignationRank(t.TeacherInfo.designation);
+
+                        // ❌ no self evaluation
+                        if (t.TeacherID.Trim().ToLower() == normalizedUserId)
+                            return false;
+
+                        // 🔥 RULE: same level + lower
+                        return targetRank <= currentRank;
+                    })
+
+                    .Select(t => new
+                    {
+                        TeacherID = t.TeacherID,
+                        TeacherName = t.TeacherInfo.name,
+                        Courses = t.Courses
                     })
                     .ToList();
 
-                var filtered = teachers.Where(t =>
-                {
-                    if (!ranks.ContainsKey(t.Designation))
-                        return false;
-
-                    int targetRank = ranks[t.Designation];
-
-                    return evaluatorRank > targetRank;
-                }).ToList();
-
-                return Ok(filtered);
+                return Ok(data);
             }
             catch (Exception ex)
             {
@@ -150,12 +143,14 @@ namespace EPAMS.Controllers.Teacher
             }
         }
 
+
         [HttpGet]
         [Route("IsEvaluator")]
-        public IHttpActionResult IsEvaluator(string  userId)
+        public IHttpActionResult IsEvaluator(string userId)
         {
-            // Convert userId to string to match teacherID type
-            var exists = db.PeerEvaluators.Any(e => e.teacherID == userId);
+
+            var exists = db.PeerEvaluators.Any(e => e.teacherID.Trim().ToLower() == userId.Trim().ToLower());
+
 
             return Ok(new
             {
@@ -164,107 +159,41 @@ namespace EPAMS.Controllers.Teacher
         }
 
 
-        //[HttpPost]
-        //[Route("SubmitEvaluation")]
-        //public IHttpActionResult SubmitEvaluation([FromBody] List<PeerEvaluation> evaluations)
-        //{
-        //    if (evaluations == null || !evaluations.Any())
-        //        return BadRequest("Invalid submission");
-
-        //    // Get latest session
-        //    var latestSession = db.Sessions
-        //                          .OrderByDescending(s => s.id) // or CreatedDate
-        //                          .FirstOrDefault();
-
-        //    if (latestSession == null)
-        //        return BadRequest("No active session found");
-
-        //    foreach (var eval in evaluations)
-        //    {
-        //        var record = new PeerEvaluation
-        //        {
-        //            evaluatorID = eval.evaluatorID,
-        //            evaluateeID = eval.evaluateeID,
-        //            questionID = eval.questionID,
-        //            courseCode = eval.courseCode,
-        //            score = eval.score,
-        //            SessionID = latestSession.id // <-- store latest session
-        //        };
-
-        //        db.PeerEvaluations.Add(record);
-        //    }
-
-        //    db.SaveChanges();
-
-        //    return Ok(new { success = true, sessionID = latestSession.id });
-        //}
-
+    
 
         [HttpPost]
         [Route("SubmitEvaluation")]
-        public IHttpActionResult SubmitEvaluation([FromBody] PeerSubmissionModel model)
+        public IHttpActionResult SubmitEvaluation([FromBody] List<PeerEvaluation> evaluations)
         {
-            try
+            if (evaluations == null || !evaluations.Any())
+                return BadRequest("Invalid submission");
+
+            // Get latest session
+            var latestSession = db.Sessions
+                                  .OrderByDescending(s => s.id) // or CreatedDate
+                                  .FirstOrDefault();
+
+            if (latestSession == null)
+                return BadRequest("No active session found");
+
+            foreach (var eval in evaluations)
             {
-                if (model == null || model.Answers == null || !model.Answers.Any())
-                    return BadRequest("Invalid Data");
-
-                var userId = (model.EvaluatorUserId ?? "").Trim().ToLower();
-
-                var sessionEvaluator = db.PeerEvaluators
-                    .FirstOrDefault(pe => pe.teacherID != null &&
-                                          pe.teacherID.Trim().ToLower() == userId);
-
-                var permanentTeacher = db.Teachers
-                    .FirstOrDefault(t => t.userID != null &&
-                                         t.userID.Trim().ToLower() == userId &&
-                                         t.isPermanentEvaluator == 1);
-
-                if (sessionEvaluator == null && permanentTeacher == null)
-                    return BadRequest("Unauthorized: You are not an assigned evaluator.");
-
-                // ✅ FIX: get session automatically if null
-                int sessionId =  db.Sessions
-                                                    .OrderByDescending(s => s.id)
-                                                    .Select(s => s.id)
-                                                    .FirstOrDefault();
-
-                int? evaluatorId = sessionEvaluator?.id;
-
-                // Duplicate check
-                var alreadySubmitted = db.PeerEvaluations.Any(p =>
-                    p.evaluateeID == model.EvaluateeId &&
-                    p.courseCode == model.CourseCode &&
-                    p.SessionID == sessionId &&
-                    p.evaluatorID == evaluatorId
-                );
-
-                if (alreadySubmitted)
-                    return BadRequest("Already submitted for this session.");
-
-                foreach (var ans in model.Answers)
+                var record = new PeerEvaluation
                 {
-                    var record = new PeerEvaluation
-                    {
-                        evaluatorID = evaluatorId,
-                        evaluateeID = model.EvaluateeId,
-                        questionID = ans.QuestionId,
-                        courseCode = model.CourseCode,
-                        score = ans.Score,
-                        SessionID = sessionId
-                    };
+                    evaluatorID = eval.evaluatorID,
+                    evaluateeID = eval.evaluateeID,
+                    questionID = eval.questionID,
+                    courseCode = eval.courseCode,
+                    score = eval.score,
+                    SessionID = latestSession.id // <-- store latest session
+                };
 
-                    db.PeerEvaluations.Add(record);
-                }
-
-                db.SaveChanges();
-
-                return Ok(new { success = true });
+                db.PeerEvaluations.Add(record);
             }
-            catch (Exception ex)
-            {
-                return Content(System.Net.HttpStatusCode.InternalServerError, ex.ToString());
-            }
+
+            db.SaveChanges();
+
+            return Ok(new { success = true, sessionID = latestSession.id });
         }
 
 
@@ -305,14 +234,63 @@ namespace EPAMS.Controllers.Teacher
         {
             try
             {
-                // Get the PeerEvaluator entry for this teacher (you may also filter by current session)
+                if (string.IsNullOrWhiteSpace(userId))
+                    return BadRequest("UserId is required");
+
+                string normalizedUserId = userId.Trim().ToLower();
+
+                var teacher = db.Teachers
+                    .FirstOrDefault(t => t.userID.Trim().ToLower() == normalizedUserId);
+
+                if (teacher == null)
+                    return Ok(new { peerEvaluatorID = (int?)null, isAllowed = false });
+
+                var latestSession = db.Sessions
+                    .OrderByDescending(s => s.id)
+                    .FirstOrDefault();
+
+                if (latestSession == null)
+                    return Ok(new { peerEvaluatorID = (int?)null, isAllowed = false });
+
+                bool isPermanent = teacher.isPermanentEvaluator == 1;
+
+                // STEP 1: check existing evaluator in latest session
                 var peerEvaluator = db.PeerEvaluators
-                    .FirstOrDefault(pe => pe.teacherID.Trim().ToLower() == userId.Trim().ToLower());
+                    .FirstOrDefault(pe =>
+                        pe.teacherID.Trim().ToLower() == normalizedUserId &&
+                        pe.sessionID == latestSession.id
+                    );
 
-                if (peerEvaluator == null)
-                    return Ok(new { peerEvaluatorID = (int?)null });
+                // STEP 2: AUTO INSERT ONLY ONCE (FIXED)
+                if (isPermanent && peerEvaluator == null)
+                {
+                    peerEvaluator = new PeerEvaluator
+                    {
+                        teacherID = normalizedUserId,
+                        sessionID = latestSession.id
+                    };
 
-                return Ok(new { peerEvaluatorID = peerEvaluator.id });
+                    db.PeerEvaluators.Add(peerEvaluator);
+                    db.SaveChanges(); // save immediately so ID is generated
+                }
+
+                // STEP 3: response
+                if (peerEvaluator != null)
+                {
+                    return Ok(new
+                    {
+                        peerEvaluatorID = peerEvaluator.id,
+                        isAllowed = true,
+                        source = isPermanent ? "PermanentTeacherAutoAdded" : "SessionEvaluator"
+                    });
+                }
+
+                return Ok(new
+                {
+                    peerEvaluatorID = (int?)null,
+                    isAllowed = false,
+                    source = "NotEvaluator"
+                });
             }
             catch (Exception ex)
             {
@@ -323,82 +301,7 @@ namespace EPAMS.Controllers.Teacher
 
 
 
-
-
-
-
-        [HttpGet]
-        [Route("IsEvaluator/{userId}/{targetUserId?}")]
-        public IHttpActionResult IsEvaluator(string userId, string targetUserId = null)
-        {
-            try
-            {
-                // 1. Evaluator aur Evaluatee (Target) ka data nikalain
-                var evaluator = db.Teachers.FirstOrDefault(t => t.userID.Trim().ToLower() == userId.Trim().ToLower());
-
-                if (evaluator == null) return Ok(new { isEvaluator = false, message = "User not found" });
-
-                // 2. Designation Levels Define Karein (Rank System)
-                Dictionary<string, int> ranks = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
-        {
-            { "Professor", 3 },
-            { "Assistent Professor", 2 },
-            { "Senior Lecturer", 1 },
-            { "Junior Lecturer", 0 }
-        };
-
-                // Current evaluator ka rank nikalain
-                int evaluatorRank = ranks.ContainsKey(evaluator.designation) ? ranks[evaluator.designation] : -1;
-
-                // 3. Hierarchy Check (Agar targetUserId provide kiya gaya hai)
-                if (!string.IsNullOrEmpty(targetUserId))
-                {
-                    var target = db.Teachers.FirstOrDefault(t => t.userID.Trim().ToLower() == targetUserId.Trim().ToLower());
-                    if (target != null)
-                    {
-                        int targetRank = ranks.ContainsKey(target.designation) ? ranks[target.designation] : -1;
-
-                        // Hierarchy Rule: Assistant Professor (Rank 2) Professor (Rank 3) ki evaluation nahi kar sakta
-                        if (evaluatorRank < targetRank)
-                        {
-                            return Ok(new
-                            {
-                                isEvaluator = false,
-                                message = "Hierarchy Violation: Juniors cannot evaluate Seniors."
-                            });
-                        }
-                    }
-                }
-
-                // 4.Baki existing logic(Permanent or Session-based)
-                var sessionEvaluator = db.PeerEvaluators.FirstOrDefault(e => e.teacherID.Trim().ToLower() == userId.Trim().ToLower());
-
-                if (evaluator.isPermanentEvaluator == 1)
-                {
-                    return Ok(new
-                    {
-                        isEvaluator = true,
-                        isPermanent = true,
-                        designation = evaluator.designation,
-                        sessionID = sessionEvaluator?.sessionID
-                    });
-                }
-
-                if (sessionEvaluator != null)
-                {
-                    return Ok(new
-                    {
-                        isEvaluator = true,
-                        isPermanent = false,
-                        designation = evaluator.designation,
-                        sessionID = sessionEvaluator.sessionID
-                    });
-                }
-
-                return Ok(new { isEvaluator = false });
-            }
-            catch (Exception ex) { return InternalServerError(ex); }
-        }
+        int employeeTypeId;
 
 
 

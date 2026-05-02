@@ -208,6 +208,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\Datacell\EnrollmentController.cs" />
     <Compile Include="Controllers\Director\EmailController.cs" />
+    <Compile Include="Controllers\Director\OverallPerformanceController.cs" />
     <Compile Include="Controllers\Director\QuestionnaireController.cs" />
     <Compile Include="Controllers\Director\PerformanceController.cs" />
     <Compile Include="Controllers\Director\ReaderController.cs" />
