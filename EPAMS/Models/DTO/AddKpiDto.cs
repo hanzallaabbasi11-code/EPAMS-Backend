@@ -22,4 +22,14 @@ namespace EPAMS.Models.DTO
         public int Weight { get; set; }
 
     }
+
+    public class EditNameDto
+    {
+        public string Name { get; set; }
+    }
+
+    public class EditWeightDto
+    {
+        public int Weight { get; set; }
+    }
 }
