@@ -22,6 +22,7 @@ namespace EPAMS.Models
             this.PeerEvaluators = new HashSet<PeerEvaluator>();
             this.SocietyEvaluations = new HashSet<SocietyEvaluation>();
             this.SocietyEvaluations1 = new HashSet<SocietyEvaluation>();
+            this.CHRs = new HashSet<CHR>();
         }
     
         public string userID { get; set; }
@@ -37,5 +38,6 @@ namespace EPAMS.Models
         public virtual User User { get; set; }
         public virtual ICollection<SocietyEvaluation> SocietyEvaluations { get; set; }
         public virtual ICollection<SocietyEvaluation> SocietyEvaluations1 { get; set; }
+        public virtual ICollection<CHR> CHRs { get; set; }
     }
 }

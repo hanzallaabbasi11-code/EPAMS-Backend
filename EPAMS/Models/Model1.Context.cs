@@ -47,5 +47,6 @@ namespace EPAMS.Models
         public DbSet<Society> Societies { get; set; }
         public DbSet<SocietyAssignment> SocietyAssignments { get; set; }
         public DbSet<SocietyEvaluation> SocietyEvaluations { get; set; }
+        public DbSet<CHR> CHRs { get; set; }
     }
 }

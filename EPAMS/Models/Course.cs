@@ -19,6 +19,7 @@ namespace EPAMS.Models
             this.CourseAllocations = new HashSet<CourseAllocation>();
             this.Enrollments = new HashSet<Enrollment>();
             this.PeerEvaluations = new HashSet<PeerEvaluation>();
+            this.CHRs = new HashSet<CHR>();
         }
     
         public string code { get; set; }
@@ -27,5 +28,6 @@ namespace EPAMS.Models
         public virtual ICollection<CourseAllocation> CourseAllocations { get; set; }
         public virtual ICollection<Enrollment> Enrollments { get; set; }
         public virtual ICollection<PeerEvaluation> PeerEvaluations { get; set; }
+        public virtual ICollection<CHR> CHRs { get; set; }
     }
 }

@@ -80,9 +80,30 @@ namespace EPAMS.Controllers.Director
                     .DefaultIfEmpty()
                     .Average() ?? 0;////same project
 
+                // 3. CHR Average Score — Session filter ke saath
+                // Sirf us session ki CHR records consider hongi
+                var chrAvg = 0.0;
+
+                var chrRawData = db.CHRs
+                    .Where(c => c.TeacherID == teacherId && c.sessionID == sessionId)
+                    .Select(x => new { LateIn = x.LateIn ?? 0, LeftEarly = x.LeftEarly ?? 0 })
+                    .ToList();
+
+                chrAvg = chrRawData.Any()
+                    ? chrRawData.Select(x => {
+                        int total = x.LateIn + x.LeftEarly;
+                        if (total >= 10) return 0.0;
+                        if (total >= 6) return 3.0;
+                        if (total >= 1) return 4.0;
+                        return 5.0;
+                    }).Average()
+                    : 0.0;
+
                 var confScores = db.KPIScores
                     .Where(ks => ks.empID == teacherId && ks.EmployeSessionKPI.SessionID == sessionId)
                     .ToList();
+
+
 
                 // 4. Breakdown
                 var groupedKPIs = activeKPIs.GroupBy(k => new { k.KPIID, k.KPIName });
@@ -112,21 +133,26 @@ namespace EPAMS.Controllers.Director
                         double maxScale = 4.0;
 
                         // ================= SCORE LOGIC =================
-                        if (subName.Contains("student"))
+                        if (subName.Contains("student") || subName.Contains("Student Evalution"))
                         {
                             multiplier = studentAvg;
                         }
-                        else if (subName.Contains("peer"))
+                        else if (subName.Contains("peer") || subName.Contains("Peer Evalution"))
                         {
                             multiplier = peerAvg;
                         }
-                        else if (subName.Contains("society"))
+                        else if (subName.Contains("society") || subName.Contains("Society Management"))
                         {
                             multiplier = isSocietyMember ? societyAvg : 0;
                         }
-                        else if (subName.Contains("confidential"))
+                        else if (subName.Contains("confidential") || subName.Contains("Confidential Evalution"))
                         {
                             multiplier = 0;
+                        }
+                        else if (subName.Contains("chr") || subName.Contains("CHR") || subName.Contains("class held report"))
+                        {
+                            multiplier = chrAvg;   // ← CHR score 0-5
+                            maxScale = 5.0;
                         }
                         else
                         {
@@ -147,7 +173,9 @@ namespace EPAMS.Controllers.Director
                             SubAchieved = achieved,
                             MaxScale = maxScale,
                             RawScore = multiplier,
-                            IsSociety = subName.Contains("society") && isSocietyMember
+                            IsSociety = subName.Contains("society") || subName.Contains("society Management") && isSocietyMember,
+                            IsCHR = subName.Contains("chr") || subName.Contains("CHR") || subName.Contains("class held report")
+
                         });
 
                         kpiAchieved += achieved;
@@ -180,6 +208,7 @@ namespace EPAMS.Controllers.Director
                     SessionName = currentSession.name,
                     IsSocietyMember = isSocietyMember,
                     OverallPercentage = overallPercentage,
+                    ChrAvgScore = Math.Round(chrAvg, 2),
                     Breakdown = finalBreakdown
                 });
             }
