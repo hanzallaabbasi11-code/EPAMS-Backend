@@ -214,6 +214,7 @@
     <Compile Include="Controllers\Director\QuestionnaireController.cs" />
     <Compile Include="Controllers\Director\PerformanceController.cs" />
     <Compile Include="Controllers\Director\ReaderController.cs" />
+    <Compile Include="Controllers\Extra Work\ExtraFeaturesController.cs" />
     <Compile Include="Controllers\HOD\CourseManagementController.cs" />
     <Compile Include="Controllers\HOD\KPIController.cs" />
     <Compile Include="Controllers\HOD\PeerEvaluatorsController.cs" />
@@ -249,6 +250,7 @@
     <Compile Include="Models\DTO\CourseManagementDto.cs" />
     <Compile Include="Models\DTO\DynamicSubKpiDto.cs" />
     <Compile Include="Models\DTO\EditRowDto.cs" />
+    <Compile Include="Models\DTO\EmailRequest.cs" />
     <Compile Include="Models\DTO\PeerEvaluationDto.cs" />
     <Compile Include="Models\DTO\PeerSubmissionModel.cs" />
     <Compile Include="Models\DTO\PerformanceDto.cs" />
