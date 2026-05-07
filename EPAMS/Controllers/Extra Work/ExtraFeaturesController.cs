@@ -13,6 +13,8 @@ namespace EPAMS.Controllers.Extra_Work
     {
         private EPAMSEntities db = new EPAMSEntities();
 
+        // GET api/TeacherSelf/GetSessions
+        // ─────────────────────────────────────────────────────────────────────
         [HttpGet]
         [Route("GetSessions")]
         public IHttpActionResult GetSessions()
@@ -21,6 +23,29 @@ namespace EPAMS.Controllers.Extra_Work
                 .OrderByDescending(s => s.id)
                 .Select(s => new { s.id, s.name })
                 .ToList());
+        }
+
+
+
+        //teacher aginst seesion
+        [HttpGet]
+        [Route("GetTeachersBySession/{sessionId}")]
+        public IHttpActionResult GetTeachersBySession(int sessionId)
+        {
+            try
+            {
+                var enrolledTeachers = db.Enrollments
+                    .Where(e => e.sessionID == sessionId)
+                    .Select(e => new {
+                        UserID = e.Teacher.userID,
+                        Name = e.Teacher.name
+                    })
+                    .Distinct()
+                    .ToList();
+
+                return Ok(enrolledTeachers);
+            }
+            catch (Exception ex) { return InternalServerError(ex); }
         }
 
         // ─────────────────────────────────────────────────────────────────────
