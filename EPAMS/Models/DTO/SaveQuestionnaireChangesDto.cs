@@ -7,9 +7,11 @@ namespace EPAMS.Models.DTO
 {
     public class SaveQuestionnaireChangesDto
     {
+
         public int QuestionnaireId { get; set; }
-        public List<QuestionEditDto> Questions { get; set; }
+        public List<QuestionItemDto> Questions { get; set; } // Updated here
         public List<int> DeletedIds { get; set; }
+
     }
 
     public class QuestionEditDto

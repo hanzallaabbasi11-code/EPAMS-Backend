@@ -341,20 +341,20 @@ namespace EPAMS.Controllers.Extra_Work
         // ─────────────────────────────────────────────────────────────────────
         [HttpGet]
         [Route("GetCourseQuestionDetail/{teacherId}/{sessionId}/{courseCode}")]
-        public IHttpActionResult GetCourseQuestionDetail(
-            string teacherId,
-            int sessionId,
-            string courseCode,
-            string evaluationType = "both")
+        public IHttpActionResult GetCourseQuestionDetail(string teacherId, int sessionId, string courseCode, string evaluationType = "both", string questionStatus = "all")
         {
             var result = new List<object>();
+            bool isAllCourses = courseCode.ToUpper() == "ALL";
+            bool onlyCritical = questionStatus.ToLower() == "critical";
 
             if (evaluationType == "student" || evaluationType == "both")
             {
-                var studentGroups = db.StudentEvaluations
+                var studentData = db.StudentEvaluations
                     .Where(s => s.Enrollment.teacherID == teacherId
-                             && s.Enrollment.sessionID == sessionId
-                             && s.Enrollment.courseCode == courseCode)
+                                && s.Enrollment.sessionID == sessionId
+                                && (isAllCourses || s.Enrollment.courseCode == courseCode)
+                                // New Filter: Only include if question status matches
+                                && (!onlyCritical || db.Questions.Any(q => q.QuestionID == s.questionID && q.isCritical == true)))
                     .GroupBy(s => s.questionID)
                     .Select(g => new
                     {
@@ -367,24 +367,19 @@ namespace EPAMS.Controllers.Extra_Work
                         Score3 = g.Count(x => x.score == 3),
                         Score4 = g.Count(x => x.score == 4),
                         Type = "Student",
-                        StudentDetails = g.Select(s => new
-                        {
-                            StudentName = db.Students
-                                .Where(st => st.userID == s.Enrollment.studentID)
-                                .Select(st => st.name).FirstOrDefault(),
-                            RollNo = s.Enrollment.studentID,
-                            Score = s.score
-                        }).ToList()
+                        StudentDetails = g.Select(s => new { StudentName = s.Enrollment.Student.name, RollNo = s.Enrollment.studentID, Score = s.score }).ToList()
                     }).ToList();
-                result.AddRange(studentGroups);
+                result.AddRange(studentData);
             }
 
             if (evaluationType == "peer" || evaluationType == "both")
             {
-                var peerGroups = db.PeerEvaluations
+                var peerData = db.PeerEvaluations
                     .Where(p => p.evaluateeID == teacherId
-                             && p.PeerEvaluator.sessionID == sessionId
-                             && p.courseCode == courseCode)
+                                && p.PeerEvaluator.sessionID == sessionId
+                                && (isAllCourses || p.courseCode == courseCode)
+                                // New Filter: Only include if question status matches
+                                && (!onlyCritical || db.Questions.Any(q => q.QuestionID == p.questionID && q.isCritical == true)))
                     .GroupBy(p => p.questionID)
                     .Select(g => new
                     {
@@ -397,17 +392,9 @@ namespace EPAMS.Controllers.Extra_Work
                         Score3 = g.Count(x => x.score == 3),
                         Score4 = g.Count(x => x.score == 4),
                         Type = "Peer",
-                        // For peer: show the evaluating teacher's name & ID
-                        StudentDetails = g.Select(p => new
-                        {
-                            StudentName = db.Teachers
-                                .Where(t => t.userID == p.PeerEvaluator.teacherID)
-                                .Select(t => t.name).FirstOrDefault(),
-                            RollNo = p.PeerEvaluator.teacherID,
-                            Score = p.score
-                        }).ToList()
+                        StudentDetails = g.Select(p => new { StudentName = p.PeerEvaluator.Teacher.name, RollNo = p.PeerEvaluator.teacherID, Score = p.score }).ToList()
                     }).ToList();
-                result.AddRange(peerGroups);
+                result.AddRange(peerData);
             }
 
             return Ok(result);

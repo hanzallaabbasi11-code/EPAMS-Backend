@@ -12,4 +12,6 @@ namespace EPAMS.Models.DTO
         public string Flag { get; set; }
         public int QuestionCount { get; set; }
     }
+
+
 }

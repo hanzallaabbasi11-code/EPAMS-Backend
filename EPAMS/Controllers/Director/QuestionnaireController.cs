@@ -35,15 +35,29 @@ namespace EPAMS.Controllers.Director
             db.SaveChanges(); // 🔥 ID generated here
 
             // 2️⃣ Insert Questions
-            foreach (var q in model.Questions)
-            {
-                var question = new Question
-                {
-                    QuestionareID = questionnaire.id,
-                    QuestionText = q
-                };
+            //foreach (var q in model.Questions)
+            //{
+            //    var question = new Question
+            //    {
+            //        QuestionareID = questionnaire.id,
+            //        QuestionText = q
+            //    };
 
-                db.Questions.Add(question);
+            //    db.Questions.Add(question);
+            //}
+
+
+            foreach (var qObj in model.Questions) // model.Questions ab object list hai
+            {
+                if (!string.IsNullOrWhiteSpace(qObj.QuestionText))
+                {
+                    db.Questions.Add(new Question
+                    {
+                        QuestionareID = questionnaire.id,
+                        QuestionText = qObj.QuestionText,
+                        isCritical = qObj.IsCritical // <--- Ye naya column add karein
+                    });
+                }
             }
 
             db.SaveChanges();
@@ -138,7 +152,8 @@ namespace EPAMS.Controllers.Director
                     var newQuestion = new Question
                     {
                         QuestionareID = model.QuestionnaireId,
-                        QuestionText = q.QuestionText
+                        QuestionText = q.QuestionText,
+                        isCritical = q.IsCritical // <--- Yahan add karein
                     };
                     db.Questions.Add(newQuestion);
                 }
@@ -149,6 +164,7 @@ namespace EPAMS.Controllers.Director
                     if (existing != null)
                     {
                         existing.QuestionText = q.QuestionText;
+                        existing.isCritical = q.IsCritical; // <--- Yahan add karein
                     }
                 }
             }
@@ -189,7 +205,8 @@ namespace EPAMS.Controllers.Director
                     .Select(qq => new
                     {
                         id = qq.QuestionID,
-                        questionText = qq.QuestionText
+                        questionText = qq.QuestionText,
+                        isCritical = qq.isCritical // <--- Frontend ko batane ke liye
                     })
                     .ToList() // ✅ safe now
             };

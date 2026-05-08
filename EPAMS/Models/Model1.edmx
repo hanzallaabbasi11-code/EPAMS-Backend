@@ -127,6 +127,7 @@
           <Property Name="QuestionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="QuestionareID" Type="int" Nullable="false" />
           <Property Name="QuestionText" Type="nvarchar" MaxLength="500" Nullable="false" />
+          <Property Name="isCritical" Type="bit" />
         </EntityType>
         <EntityType Name="Session">
           <Key>
@@ -1623,6 +1624,7 @@
           <NavigationProperty Name="PeerEvaluations" Relationship="EPAMSModel.FK__PeerEvalu__quest__282DF8C2" FromRole="Question" ToRole="PeerEvaluation" />
           <NavigationProperty Name="StudentEvaluations" Relationship="EPAMSModel.FK_StudentEvaluation_Questions" FromRole="Question" ToRole="StudentEvaluation" />
           <NavigationProperty Name="SocietyEvaluations" Relationship="EPAMSModel.FK_SocietyEvaluation_Question" FromRole="Question" ToRole="SocietyEvaluation" />
+          <Property Name="isCritical" Type="Boolean" />
         </EntityType>
         <Association Name="FK_Questions_Questionare">
           <End Type="EPAMSModel.Questionare" Role="Questionare" Multiplicity="1" />
@@ -2168,6 +2170,7 @@
           <EntitySetMapping Name="Questions">
             <EntityTypeMapping TypeName="EPAMSModel.Question">
               <MappingFragment StoreEntitySet="Questions">
+                <ScalarProperty Name="isCritical" ColumnName="isCritical" />
                 <ScalarProperty Name="QuestionText" ColumnName="QuestionText" />
                 <ScalarProperty Name="QuestionareID" ColumnName="QuestionareID" />
                 <ScalarProperty Name="QuestionID" ColumnName="QuestionID" />

@@ -42,7 +42,7 @@
         <AssociationConnector Association="EPAMSModel.FK__SessionKP__SubKP__6EF57B66" ManuallyRouted="false" />
         <AssociationConnector Association="EPAMSModel.FK__Student__userID__4AB81AF0" ManuallyRouted="false" />
         <AssociationConnector Association="EPAMSModel.FK__Teacher__userID__4E88ABD4" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="EPAMSModel.Question" Width="1.5" PointX="8.25" PointY="3.75" />
+        <EntityTypeShape EntityType="EPAMSModel.Question" Width="1.5" PointX="9" PointY="4.25" />
         <AssociationConnector Association="EPAMSModel.FK_Questions_Questionare" />
         <AssociationConnector Association="EPAMSModel.FK__PeerEvalu__quest__282DF8C2" />
         <AssociationConnector Association="EPAMSModel.FK_StudentEvaluation_Questions" />
@@ -70,7 +70,7 @@
         <AssociationConnector Association="EPAMSModel.FK_SocietyEvaluation_Society" />
         <AssociationConnector Association="EPAMSModel.FK_SocietyEvaluation_Evaluatee" />
         <AssociationConnector Association="EPAMSModel.FK_SocietyEvaluation_Evaluator" />
-        <EntityTypeShape EntityType="EPAMSModel.CHR" Width="1.5" PointX="9" PointY="0.75" />
+        <EntityTypeShape EntityType="EPAMSModel.CHR" Width="1.5" PointX="8.625" PointY="0.5" />
         <AssociationConnector Association="EPAMSModel.FK__CHR__CourseCode__54CB950F" />
         <AssociationConnector Association="EPAMSModel.FK__CHR__TeacherID__55BFB948" />
         <AssociationConnector Association="EPAMSModel.FK_CHR_Session" />
