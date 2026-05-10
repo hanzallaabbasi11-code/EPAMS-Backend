@@ -43,6 +43,7 @@ namespace FYP.Controllers.DIRECTOR
             return Ok(types);
         }
 
+
         // ✅ 3. Get Courses based on Session
         [HttpGet]
         [Route("GetCoursesBySession")]
@@ -56,6 +57,7 @@ namespace FYP.Controllers.DIRECTOR
 
             return Ok(courses);
         }
+
 
         [HttpGet]
         [Route("GetTeacherPerformance")]
@@ -185,6 +187,8 @@ namespace FYP.Controllers.DIRECTOR
 
 
 
+
+
         [HttpGet]
         [Route("GetAllTeachers")]
         public IHttpActionResult GetAllTeachers()
@@ -203,6 +207,7 @@ namespace FYP.Controllers.DIRECTOR
 
             return Ok(teachers);
         }
+
 
 
         [HttpPost]
@@ -391,7 +396,7 @@ namespace FYP.Controllers.DIRECTOR
             var peerList = db.PeerEvaluations
                 .Where(p => p.evaluateeID == teacherId &&
                        (courseCode == null || p.courseCode.ToUpper().Trim() == courseCode.ToUpper().Trim()) &&
-                       (sessionId == null || p.SessionID == sessionId))
+                       (sessionId == 0 || p.SessionID == sessionId))
                 .ToList();
 
             double peerTotalScore = peerList.Sum(p => (double)p.score);
@@ -404,7 +409,7 @@ namespace FYP.Controllers.DIRECTOR
             var studentList = db.StudentEvaluations
                 .Where(s =>
                     (courseCode == null || s.Enrollment.courseCode.ToUpper().Trim() == courseCode.ToUpper().Trim()) &&
-                    (sessionId == null || s.SessionID == sessionId) &&
+                    (sessionId == 0 || s.SessionID == sessionId) &&
                     s.Enrollment.teacherID == teacherId
                 )
                 .ToList();
@@ -446,14 +451,17 @@ namespace FYP.Controllers.DIRECTOR
             });
         }
 
+        ////////////////Academic
+
+
 
         [HttpGet]
         [Route("GetTeachersPerformanceList")]
         public IHttpActionResult GetTeachersPerformanceList(
-      int sessionId,
-      string department = "All",
-      string courseCode = "All"
-  )
+       int sessionId,
+       string department = "All",
+       string courseCode = "All"
+   )
         {
             var query = db.Enrollments
                 .Where(e => e.sessionID == sessionId);
