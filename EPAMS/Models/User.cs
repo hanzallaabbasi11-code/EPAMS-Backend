@@ -24,7 +24,6 @@ namespace EPAMS.Models
         public string id { get; set; }
         public string password { get; set; }
         public string role { get; set; }
-        public string profileImagePath { get; set; }
         public Nullable<int> isActive { get; set; }
     
         public virtual Student Student { get; set; }

@@ -18,14 +18,15 @@ namespace EPAMS.Controllers.Teacher
         // GET: api/TeacherDashboard/GetActiveQuestionnaire
         [HttpGet]
         [Route("GetActiveQuestionnaire")]
-        public IHttpActionResult GetActiveQuestionnaire()
+        public IHttpActionResult GetActiveQuestionnaire(string type)
         {
             try
             {
-                // Get Questionnaire where flag = '1'
                 var questionnaire = db.Questionares
-                    .Include("Questions")   // ✅ EF6 string-based Include
-                    .Where(q => q.flag == "1")
+                    .Include("Questions")
+                    .Where(q =>
+                        q.flag == "1" &&
+                        q.type.ToLower() == type.ToLower())
                     .Select(q => new
                     {
                         QuestionareID = q.id,
@@ -40,7 +41,11 @@ namespace EPAMS.Controllers.Teacher
                     .FirstOrDefault();
 
                 if (questionnaire == null)
-                    return Ok(new { Message = "No active questionnaire found" });
+                    return Ok(new
+                    {
+                        Flag = "0",
+                        Message = "No active questionnaire found"
+                    });
 
                 return Ok(questionnaire);
             }
@@ -51,7 +56,7 @@ namespace EPAMS.Controllers.Teacher
         }
 
 
-       
+
 
 
         private int GetDesignationRank(string designation)
@@ -61,11 +66,12 @@ namespace EPAMS.Controllers.Teacher
 
             switch (designation.Trim().ToLower())
             {
-                case "hod": return 5;                  // 🔥 highest
+                case "Head of department": return 5;                  // 🔥 highest
                 case "professor": return 4;
                 case "assistant professor": return 3;
-                case "teacher": return 2;
-                case "junior teacher": return 1;
+                case "senior lecturer": return 2;
+                case "Junior lecturer": return 2;
+                case "": return 1;
                 default: return 0;
             }
         }
@@ -297,6 +303,7 @@ namespace EPAMS.Controllers.Teacher
                 return InternalServerError(ex);
             }
         }
+
 
 
 

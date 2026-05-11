@@ -22,90 +22,107 @@ namespace FYP.Controllers.Teacher
             try
             {
                 var httpRequest = HttpContext.Current.Request;
-
-                // 1️⃣ Validate file
-                if (httpRequest.Files.Count == 0)
-                    return BadRequest("No file uploaded.");
+                if (httpRequest.Files.Count == 0) return BadRequest("No file uploaded.");
 
                 var file = httpRequest.Files[0];
 
-                if (file == null || file.ContentLength == 0)
-                    return BadRequest("Empty file.");
+                // System.Text Encoding registration for ExcelDataReader
+                //System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
-                if (!file.FileName.EndsWith(".xlsx"))
-                    return BadRequest("Only .xlsx files are supported.");
+                int insertedCount = 0;
+                int updatedCount = 0;
 
-                int insertedTeachers = 0;
-                int insertedUsers = 0;
-
-                // 2️⃣ Read Excel
                 using (var stream = file.InputStream)
-                using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
-                    var result = reader.AsDataSet(new ExcelDataSetConfiguration()
+                    // ✅ Reader ko stream ke andar hi hona chahiye
+                    using (var reader = ExcelReaderFactory.CreateReader(stream))
                     {
-                        ConfigureDataTable = (_) =>
-                            new ExcelDataTableConfiguration
-                            {
-                                UseHeaderRow = true
-                            }
-                    });
-
-                    if (result.Tables.Count == 0)
-                        return BadRequest("Excel file is empty.");
-
-                    var dataTable = result.Tables[0];
-
-                    // 3️⃣ Process rows
-                    foreach (DataRow row in dataTable.Rows)
-                    {
-                        if (row["Userid"] == DBNull.Value ||
-                            row["Name"] == DBNull.Value ||
-                            row["Department"] == DBNull.Value)
-                            continue;
-
-                        string userId = row["Userid"].ToString().Trim();
-                        string name = row["Name"].ToString().Trim();
-                        string department = row["Department"].ToString().Trim();
-
-                        if (string.IsNullOrEmpty(userId))
-                            continue;
-
-                        // 4️⃣ Add User if not exists
-                        var existingUser = db.Users.Find(userId);
-
-                        if (existingUser == null)
+                        var result = reader.AsDataSet(new ExcelDataSetConfiguration()
                         {
-                            db.Users.Add(new User
-                            {
-                                id = userId,
-                                password = "default123",   // TODO: hash later
-                                role = "Teacher",
-                                profileImagePath = null,
-                                isActive = 1
-                            });
-
-                            insertedUsers++;
-                        }
-
-                        // 5️⃣ Prevent duplicate teacher
-                        if (db.Teachers.Any(t => t.userID == userId))
-                            continue;
-
-                        db.Teachers.Add(new TeacherModel
-                        {
-                            userID = userId,
-                            name = name,
-                            department = department
+                            ConfigureDataTable = (_) => new ExcelDataTableConfiguration() { UseHeaderRow = true }
                         });
 
-                        insertedTeachers++;
-                    }
+                        var dataTable = result.Tables[0];
 
-                    db.SaveChanges();
+                        foreach (DataRow row in dataTable.Rows)
+                        {
+                            // ✅ Null check with case-sensitive headers
+                            if (row["UserID"] == DBNull.Value || row["Name"] == DBNull.Value ||
+                                row["Department"] == DBNull.Value || row["Designation"] == DBNull.Value)
+                            {
+                                continue;
+                            }
+
+                            string userId = row["UserID"].ToString().Trim();
+                            string name = row["Name"].ToString().Trim();
+                            string department = row["Department"].ToString().Trim();
+                            string designation = row["Designation"].ToString().Trim();
+
+                            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(name)) continue;
+
+                            // 1. Handle Users Table (Login Account)
+                            var existingUser = db.Users.Find(userId);
+                            if (existingUser == null)
+                            {
+                                db.Users.Add(new EPAMS.Models.User
+                                {
+                                    id = userId,
+                                    password = "default123", // Default password
+                                    role = "Teacher",
+                                    isActive = 1
+                                });
+                            }
+
+                            // 2. Handle Teacher Table (Add or Update Logic)
+                            var teacher = db.Teachers.Find(userId);
+                            if (teacher == null)
+                            {
+                                // Naya Teacher Add karein
+                                db.Teachers.Add(new EPAMS.Models.Teacher
+                                {
+                                    userID = userId,
+                                    name = name,
+                                    department = department,
+                                    designation = designation,
+                                    isPermanentEvaluator = 0
+                                });
+                                insertedCount++;
+                            }
+                            else
+                            {
+                                // Pehle se mojood teacher ko update karein
+                                teacher.name = name;
+                                teacher.department = department;
+                                teacher.designation = designation;
+                                updatedCount++;
+                            }
+                        }
+
+                        db.SaveChanges();
+                    }
                 }
 
-                return Ok($"{insertedTeachers} teachers uploaded successfully. Users added: {insertedUsers}");
+                // ✅ Final Message logic for Alert
+                string finalMessage = "";
+                if (insertedCount > 0 && updatedCount > 0)
+                {
+                    finalMessage = $"{insertedCount} Teachers Added & {updatedCount} Updated Successfully!";
+                }
+                else if (insertedCount > 0)
+                {
+                    finalMessage = $"{insertedCount} New Teachers Added Successfully!";
+                }
+                else if (updatedCount > 0)
+                {
+                    finalMessage = $"{updatedCount} Teachers Updated Successfully!";
+                }
+                else
+                {
+                    finalMessage = "Excel Processed: No new changes found.";
+                }
+
+                // Return as simple string for React alert
+                return Ok(finalMessage);
             }
             catch (Exception ex)
             {
