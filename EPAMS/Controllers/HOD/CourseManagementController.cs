@@ -253,6 +253,7 @@ namespace EPAMS.Controllers.HOD
         {
             try
             {
+                // ✅ Har course ke against alag score aao
                 var performance = (from s in db.KPIScores
                                    join m in db.EmployeSessionKPIs on s.empKPIID equals m.id
                                    join sub in db.SubKPIs on m.SubKPIID equals sub.id
@@ -267,14 +268,28 @@ namespace EPAMS.Controllers.HOD
                                            : "Delayed submission recorded."
                                    }).ToList();
 
-                if (!performance.Any())
+                // ✅ Har course alag card mein
+                var courseDetails = (from e in db.Enrollments
+                                     join c in db.Courses on e.courseCode equals c.code
+                                     where e.teacherID == tid && e.sessionID == sid
+                                     select new
+                                     {
+                                         CourseCode = e.courseCode,
+                                         CourseName = c.title
+                                     }).Distinct().ToList();
+
+                if (!performance.Any() && !courseDetails.Any())
                     return NotFound();
 
-                return Ok(performance);
+                return Ok(new
+                {
+                    Performance = performance,
+                    Courses = courseDetails
+                });
             }
             catch (Exception ex)
             {
-                return InternalServerError(new Exception("Fetch performance error: " + ex.Message));
+                return InternalServerError(new Exception("Error: " + ex.Message));
             }
         }
 

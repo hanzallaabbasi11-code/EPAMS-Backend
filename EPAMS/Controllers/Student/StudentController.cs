@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Http;
 using StudentModel = EPAMS.Models.Student;
 
+
 namespace EPAMS.Controllers
 {
     [RoutePrefix("api/student")]
@@ -15,6 +16,113 @@ namespace EPAMS.Controllers
         EPAMSEntities db = new EPAMSEntities();
 
         // POST: api/student/upload
+        //[HttpPost]
+        //[Route("upload")]
+        //public IHttpActionResult UploadStudent()
+        //{
+        //    try
+        //    {
+        //        var httpRequest = HttpContext.Current.Request;
+
+        //        // 1️⃣ Validate file
+        //        if (httpRequest.Files.Count == 0)
+        //            return BadRequest("No file uploaded.");
+
+        //        var file = httpRequest.Files[0];
+
+        //        if (file == null || file.ContentLength == 0)
+        //            return BadRequest("Empty file.");
+
+        //        if (!file.FileName.EndsWith(".xlsx"))
+        //            return BadRequest("Only .xlsx files are supported.");
+
+        //        // 2️⃣ Read sessionId from frontend
+        //        if (!int.TryParse(httpRequest.Form["sessionId"], out int sessionId))
+        //            return BadRequest("Invalid session ID.");
+
+        //        // 3️⃣ Validate session
+        //        if (!db.Sessions.Any(s => s.id == sessionId))
+        //            return BadRequest("Session not found.");
+
+        //        int insertedCount = 0;
+        //        int skippedDuplicate = 0;
+
+        //        // 4️⃣ Read Excel
+        //        using (var stream = file.InputStream)
+        //        using (var reader = ExcelReaderFactory.CreateOpenXmlReader(stream))
+        //        {
+        //            var result = reader.AsDataSet(new ExcelDataSetConfiguration()
+        //            {
+        //                ConfigureDataTable = (_) =>
+        //                    new ExcelDataTableConfiguration
+        //                    {
+        //                        UseHeaderRow = true
+        //                    }
+        //            });
+
+        //            if (result.Tables.Count == 0)
+        //                return BadRequest("Excel file is empty.");
+
+        //            var dataTable = result.Tables[0];
+
+        //            // 5️⃣ Process rows
+        //            foreach (DataRow row in dataTable.Rows)
+        //            {
+        //                if (row["UserID"] == DBNull.Value ||
+        //                    row["Name"] == DBNull.Value)
+        //                    continue;
+
+        //                string userId = row["UserID"].ToString().Trim();
+        //                string name = row["Name"].ToString().Trim();
+
+        //                // 6️⃣ Add User if not exists
+        //                if (db.Users.Find(userId) == null)
+        //                {
+        //                    db.Users.Add(new User
+        //                    {
+        //                        id = userId,
+        //                        password = "default123",
+        //                        role = "Student",
+        //                        isActive = 1
+        //                    });
+        //                }
+
+        //                // 7️⃣ Prevent duplicate student
+        //                if (db.Students.Any(s => s.userID == userId))
+        //                {
+        //                    skippedDuplicate++;
+        //                    continue;
+        //                }
+
+        //                // 8️⃣ Add Student
+        //                db.Students.Add(new StudentModel
+        //                {
+        //                    userID = userId,
+        //                    name = name,
+        //                    admissionSessionID = sessionId
+        //                });
+
+        //                insertedCount++;
+        //            }
+
+        //            db.SaveChanges();
+        //        }
+
+        //        string message =
+        //            $"{insertedCount} students uploaded successfully.";
+
+        //        if (skippedDuplicate > 0)
+        //            message += $" {skippedDuplicate} duplicate(s) skipped.";
+
+        //        return Ok(message);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.ToString());
+        //    }
+        //}
+
+
         [HttpPost]
         [Route("upload")]
         public IHttpActionResult UploadStudent()
@@ -23,101 +131,107 @@ namespace EPAMS.Controllers
             {
                 var httpRequest = HttpContext.Current.Request;
 
-                // 1️⃣ Validate file
+                // 1️⃣ Read sessionId from form
+                if (string.IsNullOrEmpty(httpRequest.Form["sessionId"]))
+                    return BadRequest("Session not selected.");
+
+                int sessionId = int.Parse(httpRequest.Form["sessionId"]);
+
+                // 2️⃣ Check session exists
+                if (db.Sessions.Find(sessionId) == null)
+                    return BadRequest("Invalid session selected.");
+
+                // 3️⃣ Check file uploaded
                 if (httpRequest.Files.Count == 0)
                     return BadRequest("No file uploaded.");
 
                 var file = httpRequest.Files[0];
-
                 if (file == null || file.ContentLength == 0)
                     return BadRequest("Empty file.");
 
-                if (!file.FileName.EndsWith(".xlsx"))
-                    return BadRequest("Only .xlsx files are supported.");
+               // System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
-                // 2️⃣ Read sessionId from frontend
-                if (!int.TryParse(httpRequest.Form["sessionId"], out int sessionId))
-                    return BadRequest("Invalid session ID.");
-
-                // 3️⃣ Validate session
-                if (!db.Sessions.Any(s => s.id == sessionId))
-                    return BadRequest("Session not found.");
-
-                int insertedCount = 0;
-                int skippedDuplicate = 0;
-
-                // 4️⃣ Read Excel
                 using (var stream = file.InputStream)
-                using (var reader = ExcelReaderFactory.CreateOpenXmlReader(stream))
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
                 {
                     var result = reader.AsDataSet(new ExcelDataSetConfiguration()
                     {
-                        ConfigureDataTable = (_) =>
-                            new ExcelDataTableConfiguration
-                            {
-                                UseHeaderRow = true
-                            }
+                        ConfigureDataTable = (_) => new ExcelDataTableConfiguration()
+                        {
+                            UseHeaderRow = true
+                        }
                     });
-
-                    if (result.Tables.Count == 0)
-                        return BadRequest("Excel file is empty.");
 
                     var dataTable = result.Tables[0];
 
-                    // 5️⃣ Process rows
+                    int inserted = 0;
+                    int skippedDuplicate = 0;
+
                     foreach (DataRow row in dataTable.Rows)
                     {
-                        if (row["UserID"] == DBNull.Value ||
-                            row["Name"] == DBNull.Value)
+                        if (row["UserID"] == DBNull.Value || row["Name"] == DBNull.Value)
                             continue;
 
                         string userId = row["UserID"].ToString().Trim();
                         string name = row["Name"].ToString().Trim();
 
-                        // 6️⃣ Add User if not exists
+                        // ✅ FIXED CGPA reading
+                        decimal cgpa = 0;
+                        var cgpaCol = dataTable.Columns.Cast<DataColumn>()
+                            .FirstOrDefault(c => c.ColumnName.Equals("CGPA", StringComparison.OrdinalIgnoreCase));
+
+                        if (cgpaCol != null && row[cgpaCol] != DBNull.Value)
+                        {
+                            decimal.TryParse(row[cgpaCol].ToString().Trim(), out cgpa);
+                        }
+
+                        // Users table
                         if (db.Users.Find(userId) == null)
                         {
                             db.Users.Add(new User
                             {
                                 id = userId,
-                                password = "default123",
+                                password = "123",
                                 role = "Student",
                                 isActive = 1
                             });
                         }
-
-                        // 7️⃣ Prevent duplicate student
-                        if (db.Students.Any(s => s.userID == userId))
+                        var existingStudent = db.Students.Find(userId);
+                        if (existingStudent != null)
                         {
+                            // ✅ Sirf CGPA update karo
+                            existingStudent.CGPA = cgpa;
                             skippedDuplicate++;
                             continue;
                         }
 
-                        // 8️⃣ Add Student
-                        db.Students.Add(new StudentModel
+
+                        // if (db.Student.Find(userId) != null)
+                        //{
+                        //    skippedDuplicate++;
+                        //    continue;
+                        //}
+
+                        db.Students.Add(new EPAMS.Models.Student
                         {
                             userID = userId,
                             name = name,
-                            admissionSessionID = sessionId
+                            admissionSessionID = sessionId,
+                            CGPA = cgpa  // ✅ Ab sahi value jayegi
                         });
 
-                        insertedCount++;
+                        inserted++;
                     }
+                    // Student duplicate check
 
                     db.SaveChanges();
+
+                    return Ok($"{inserted} students uploaded. {skippedDuplicate} duplicates skipped.");
                 }
-
-                string message =
-                    $"{insertedCount} students uploaded successfully.";
-
-                if (skippedDuplicate > 0)
-                    message += $" {skippedDuplicate} duplicate(s) skipped.";
-
-                return Ok(message);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.ToString());
+                return InternalServerError(ex);
             }
         }
 

@@ -73,6 +73,8 @@
           <Property Name="teacherID" Type="varchar" MaxLength="20" />
           <Property Name="courseCode" Type="varchar" MaxLength="20" />
           <Property Name="sessionID" Type="int" />
+          <Property Name="Section" Type="varchar" MaxLength="20" />
+          <Property Name="Grade" Type="varchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="KPI">
           <Key>
@@ -185,6 +187,7 @@
           <Property Name="userID" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="name" Type="varchar" MaxLength="30" />
           <Property Name="admissionSessionID" Type="int" />
+          <Property Name="CGPA" Type="decimal" Precision="3" Scale="2" />
         </EntityType>
         <EntityType Name="StudentEvaluation">
           <Key>
@@ -986,6 +989,8 @@
           <NavigationProperty Name="Student" Relationship="Self.FK__Enrollmen__stude__534D60F1" FromRole="Enrollment" ToRole="Student" />
           <NavigationProperty Name="Teacher" Relationship="Self.FK__Enrollmen__teach__5441852A" FromRole="Enrollment" ToRole="Teacher" />
           <NavigationProperty Name="StudentEvaluations" Relationship="Self.FK__StudentEv__enrol__5AEE82B9" FromRole="Enrollment" ToRole="StudentEvaluation" />
+          <Property Name="Section" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Grade" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="KPI">
           <Key>
@@ -1079,6 +1084,7 @@
           <NavigationProperty Name="Session" Relationship="Self.FK__Student__admissi__4BAC3F29" FromRole="Student" ToRole="Session" />
           <NavigationProperty Name="User" Relationship="Self.FK__Student__userID__4AB81AF0" FromRole="Student" ToRole="Users" />
           <NavigationProperty Name="StudentEvaluations" Relationship="EPAMSModel.FK_StudentEvaluation_Student" FromRole="Student" ToRole="StudentEvaluation" />
+          <Property Name="CGPA" Type="Decimal" Precision="3" Scale="2" />
         </EntityType>
         <EntityType Name="StudentEvaluation">
           <Key>
@@ -2046,6 +2052,8 @@
           <EntitySetMapping Name="Enrollments">
             <EntityTypeMapping TypeName="EPAMSModel.Enrollment">
               <MappingFragment StoreEntitySet="Enrollment">
+                <ScalarProperty Name="Grade" ColumnName="Grade" />
+                <ScalarProperty Name="Section" ColumnName="Section" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="studentID" ColumnName="studentID" />
                 <ScalarProperty Name="teacherID" ColumnName="teacherID" />
@@ -2116,6 +2124,7 @@
           <EntitySetMapping Name="Students">
             <EntityTypeMapping TypeName="EPAMSModel.Student">
               <MappingFragment StoreEntitySet="Student">
+                <ScalarProperty Name="CGPA" ColumnName="CGPA" />
                 <ScalarProperty Name="userID" ColumnName="userID" />
                 <ScalarProperty Name="name" ColumnName="name" />
                 <ScalarProperty Name="admissionSessionID" ColumnName="admissionSessionID" />

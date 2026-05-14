@@ -1,15 +1,16 @@
-﻿using ExcelDataReader;
+﻿using EPAMS.Models;
+using EPAMS.Models.DTO;
+using ExcelDataReader;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.ConstrainedExecution;
 using System.Web;
 using System.Web.Http;
-using EPAMS.Models;
-using EPAMS.Models.DTO;
 
 
 namespace EPAMS.Controllers.Datacell
@@ -174,27 +175,41 @@ namespace EPAMS.Controllers.Datacell
         // ── 2. HOD Dashboard (Session Filter Optional) ───────────
         [HttpGet]
         [Route("GetHODDashboard")]
-        public IHttpActionResult GetHODDashboard(int? sessionID = null)
+        public IHttpActionResult GetHODDashboard(
+     int? sessionID = null,
+     string reportDate = null
+ )
         {
             try
             {
-                // sessionID diya hai to filter karo, warna sab dikhao
                 var query = db.CHRs.AsQueryable();
-                if (sessionID.HasValue)
+
+                // Session filter
+                if (sessionID.HasValue && sessionID.Value != 0)
                     query = query.Where(c => c.sessionID == sessionID.Value);
 
+                // Date filter
+                if (!string.IsNullOrEmpty(reportDate))
+                {
+                    DateTime parsedDate = DateTime.Parse(reportDate).Date;
+
+                    query = query.Where(c => DbFunctions.TruncateTime(c.ClassDate) == parsedDate);
+                }
+
                 var allRows = query.OrderBy(c => c.id).ToList();
-                if (!allRows.Any()) return Ok(new List<object>());
+
+                if (!allRows.Any())
+                    return Ok(new List<object>());
 
                 var batches = allRows
-                    .GroupBy(c => new { c.ClassDate, c.sessionID })   // session + date se group
+                    .GroupBy(c => new { c.ClassDate, c.sessionID })
                     .Select(g =>
                     {
                         var rows = g.OrderBy(x => x.id).ToList();
                         var first = rows.First();
 
-                        // Session name join
-                        var session = db.Sessions.FirstOrDefault(s => s.id == first.sessionID);
+                        var session = db.Sessions
+                            .FirstOrDefault(s => s.id == first.sessionID);
 
                         return new
                         {
@@ -208,7 +223,7 @@ namespace EPAMS.Controllers.Datacell
                             EarlyLeavers = rows.Count(x => (x.LeftEarly ?? 0) > 0),
                             CancelledClasses = rows.Count(x => (x.LateIn ?? 0) >= 10),
                             AvgScore = rows.Average(x =>
-                                               (double)CalculateScore(x.LateIn))
+                                (double)CalculateScore(x.LateIn))
                         };
                     })
                     .OrderByDescending(x => x.ReportId)
@@ -218,10 +233,11 @@ namespace EPAMS.Controllers.Datacell
             }
             catch (Exception ex)
             {
-                return InternalServerError(new Exception("Error: " + ex.Message));
+                return InternalServerError(
+                    new Exception("Error: " + ex.Message)
+                );
             }
-        }
-
+        }       
         // ── 3. Detail by ReportId ────────────────────────────────
         [HttpGet]
         [Route("GetReportById/{id:int}")]
@@ -396,6 +412,107 @@ namespace EPAMS.Controllers.Datacell
                 return InternalServerError(new Exception("Backend Error: " + ex.Message));
             }
     
-        }  
+        }
+
+
+        // ── 3A. Filter Report ─────────────────────────────────────
+        [HttpGet]
+        [Route("FilterReport")]
+        public IHttpActionResult FilterReport(
+            int reportId,
+            string courseCode = "",
+            string teacherName = "",
+            string classDate = "")
+        {
+            try
+            {
+                // Find batch anchor
+                var anchor = db.CHRs.FirstOrDefault(c => c.id == reportId);
+
+                if (anchor == null)
+                    return NotFound();
+
+                DateTime batchDate = anchor.ClassDate;
+                int? batchSession = anchor.sessionID;
+
+                // Same batch = same date + same session
+                var query = db.CHRs.Where(c =>
+                    c.ClassDate == batchDate &&
+                    c.sessionID == batchSession);
+
+                // ── Filter By Course ─────────────────────────
+                if (!string.IsNullOrEmpty(courseCode))
+                {
+                    query = query.Where(c =>
+                        c.CourseCode.Contains(courseCode));
+                }
+
+                // ── Filter By Teacher ───────────────────────
+                if (!string.IsNullOrEmpty(teacherName))
+                {
+                    query = query.Where(c =>
+                        c.TeacherName.Contains(teacherName));
+                }
+
+                // ── Filter By Date ──────────────────────────
+                if (!string.IsNullOrEmpty(classDate))
+                {
+                    DateTime parsedDate;
+
+                    if (DateTime.TryParse(classDate, out parsedDate))
+                    {
+                        DateTime startDate = parsedDate.Date;
+                        DateTime endDate = startDate.AddDays(1);
+
+                        query = query.Where(c =>
+                            c.ClassDate >= startDate &&
+                            c.ClassDate < endDate);
+                    }
+                }
+
+                // ── Final Data ──────────────────────────────
+                var data = query
+                    .OrderBy(c => c.id)
+                    .ToList()
+                    .Select(c => new
+                    {
+                        c.id,
+                        c.TeacherID,
+                        c.TeacherName,
+                        c.CourseCode,
+                        c.Discipline,
+                        c.Venue,
+                        c.ClassDate,
+                        c.sessionID,
+
+                        LateIn = c.LateIn ?? 0,
+                        LeftEarly = c.LeftEarly ?? 0,
+
+                        c.Remarks,
+
+                        Score = CalculateScore(
+                            c.LateIn,
+                            c.LeftEarly
+                        ),
+
+                        Status = GetComputedStatus(
+                            c.LateIn,
+                            c.LeftEarly,
+                            c.Status
+                        )
+                    })
+                    .ToList();
+
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(
+                    new Exception(
+                        "Filter Error: " + ex.Message
+                    )
+                );
+            }
+        }
     }
 }
