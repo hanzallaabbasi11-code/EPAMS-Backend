@@ -219,6 +219,7 @@
     <Compile Include="Controllers\HOD\KPIController.cs" />
     <Compile Include="Controllers\HOD\PeerEvaluatorsController.cs" />
     <Compile Include="Controllers\HOD\SocietyEvaluationController.cs" />
+    <Compile Include="Controllers\HOD\TopPerformerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\Login\UsersController.cs" />
     <Compile Include="Controllers\Student\CourseController.cs" />
