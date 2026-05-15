@@ -93,6 +93,8 @@
           <Property Name="empID" Type="varchar" MaxLength="20" />
           <Property Name="score" Type="int" />
           <Property Name="evaluatorID" Type="varchar" MaxLength="20" />
+          <Property Name="enrollmentID" Type="int" />
+          <Property Name="remarks" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="PeerEvaluation">
           <Key>
@@ -404,6 +406,18 @@
             </Principal>
             <Dependent Role="KPIScore">
               <PropertyRef Name="empKPIID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__KPIScore__enroll__0C1BC9F9">
+          <End Role="Enrollment" Type="Self.Enrollment" Multiplicity="0..1" />
+          <End Role="KPIScore" Type="Self.KPIScore" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Enrollment">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="KPIScore">
+              <PropertyRef Name="enrollmentID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -827,6 +841,10 @@
             <End Role="EmployeSessionKPI" EntitySet="EmployeSessionKPI" />
             <End Role="KPIScore" EntitySet="KPIScore" />
           </AssociationSet>
+          <AssociationSet Name="FK__KPIScore__enroll__0C1BC9F9" Association="Self.FK__KPIScore__enroll__0C1BC9F9">
+            <End Role="Enrollment" EntitySet="Enrollment" />
+            <End Role="KPIScore" EntitySet="KPIScore" />
+          </AssociationSet>
           <AssociationSet Name="FK__KPIScore__evalua__7E02B4CC" Association="Self.FK__KPIScore__evalua__7E02B4CC">
             <End Role="Users" EntitySet="Users" />
             <End Role="KPIScore" EntitySet="KPIScore" />
@@ -991,6 +1009,7 @@
           <NavigationProperty Name="StudentEvaluations" Relationship="Self.FK__StudentEv__enrol__5AEE82B9" FromRole="Enrollment" ToRole="StudentEvaluation" />
           <Property Name="Section" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="Grade" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="KPIScores" Relationship="EPAMSModel.FK__KPIScore__enroll__0C1BC9F9" FromRole="Enrollment" ToRole="KPIScore" />
         </EntityType>
         <EntityType Name="KPI">
           <Key>
@@ -1616,6 +1635,10 @@
             <End Role="Session" EntitySet="Sessions" />
             <End Role="CHR" EntitySet="CHRs" />
           </AssociationSet>
+          <AssociationSet Name="FK__KPIScore__enroll__0C1BC9F9" Association="EPAMSModel.FK__KPIScore__enroll__0C1BC9F9">
+            <End Role="Enrollment" EntitySet="Enrollments" />
+            <End Role="KPIScore" EntitySet="KPIScores" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="Question">
           <Key>
@@ -1714,6 +1737,9 @@
           <NavigationProperty Name="EmployeSessionKPI" Relationship="EPAMSModel.FK__KPIScore__empKPI__7C1A6C5A" FromRole="KPIScore" ToRole="EmployeSessionKPI" />
           <NavigationProperty Name="User" Relationship="EPAMSModel.FK__KPIScore__empID__7D0E9093" FromRole="KPIScore" ToRole="User" />
           <NavigationProperty Name="User1" Relationship="EPAMSModel.FK__KPIScore__evalua__7E02B4CC" FromRole="KPIScore" ToRole="User" />
+          <Property Name="enrollmentID" Type="Int32" />
+          <Property Name="remarks" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Enrollment" Relationship="EPAMSModel.FK__KPIScore__enroll__0C1BC9F9" FromRole="KPIScore" ToRole="Enrollment" />
         </EntityType>
         <Association Name="FK__EmployeSe__Emplo__793DFFAF">
           <End Type="EPAMSModel.EmployeeType" Role="EmployeeType" Multiplicity="0..1" />
@@ -2017,6 +2043,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK__KPIScore__enroll__0C1BC9F9">
+          <End Type="EPAMSModel.Enrollment" Role="Enrollment" Multiplicity="0..1" />
+          <End Type="EPAMSModel.KPIScore" Role="KPIScore" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Enrollment">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="KPIScore">
+              <PropertyRef Name="enrollmentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2207,6 +2245,8 @@
           <EntitySetMapping Name="KPIScores">
             <EntityTypeMapping TypeName="EPAMSModel.KPIScore">
               <MappingFragment StoreEntitySet="KPIScore">
+                <ScalarProperty Name="remarks" ColumnName="remarks" />
+                <ScalarProperty Name="enrollmentID" ColumnName="enrollmentID" />
                 <ScalarProperty Name="evaluatorID" ColumnName="evaluatorID" />
                 <ScalarProperty Name="score" ColumnName="score" />
                 <ScalarProperty Name="empID" ColumnName="empID" />

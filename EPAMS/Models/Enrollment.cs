@@ -17,6 +17,7 @@ namespace EPAMS.Models
         public Enrollment()
         {
             this.StudentEvaluations = new HashSet<StudentEvaluation>();
+            this.KPIScores = new HashSet<KPIScore>();
         }
     
         public int id { get; set; }
@@ -32,5 +33,6 @@ namespace EPAMS.Models
         public virtual Student Student { get; set; }
         public virtual Teacher Teacher { get; set; }
         public virtual ICollection<StudentEvaluation> StudentEvaluations { get; set; }
+        public virtual ICollection<KPIScore> KPIScores { get; set; }
     }
 }

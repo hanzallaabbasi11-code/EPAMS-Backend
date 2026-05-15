@@ -19,9 +19,12 @@ namespace EPAMS.Models
         public string empID { get; set; }
         public Nullable<int> score { get; set; }
         public string evaluatorID { get; set; }
+        public Nullable<int> enrollmentID { get; set; }
+        public string remarks { get; set; }
     
         public virtual EmployeSessionKPI EmployeSessionKPI { get; set; }
         public virtual User User { get; set; }
         public virtual User User1 { get; set; }
+        public virtual Enrollment Enrollment { get; set; }
     }
 }

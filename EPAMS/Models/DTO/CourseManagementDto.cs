@@ -28,6 +28,8 @@ namespace EPAMS.Models.DTO
             public string HODID { get; set; }
             public string PaperStatus { get; set; }  // "OnTime" or "Late"
             public string FolderStatus { get; set; } // "OnTime" or "Late"
+
+
         }
 
         // In case you want to send evaluation for multiple courses at once in future
@@ -42,8 +44,18 @@ namespace EPAMS.Models.DTO
         public class CourseEvalDTO
         {
             public string CourseCode { get; set; }
+            public int EnrollmentID { get; set; } // CourseCode ki jagah EnrollmentID behtar hai
             public string PaperStatus { get; set; }
             public string FolderStatus { get; set; }
+            public string Remarks { get; set; } // HOD ke custom remarks yahan aayenge
+        }
+
+        public class IndividualEvaluationDTO
+        {
+            public string CourseCode { get; set; }
+            public string PaperStatus { get; set; }
+            public string FolderStatus { get; set; }
+            public string Remarks { get; set; } // HOD ke custom remarks yahan aayenge
         }
     }
 }
