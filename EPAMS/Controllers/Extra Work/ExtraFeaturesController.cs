@@ -13,6 +13,27 @@ namespace EPAMS.Controllers.Extra_Work
     {
         private EPAMSEntities db = new EPAMSEntities();
 
+
+
+        [HttpGet]
+        [Route("GetSections")]
+        public IHttpActionResult GetSections(string teacherId, int sessionId, string courseCode = null)
+        {
+            var sections = db.Enrollments
+                .Where(e =>
+                    e.teacherID == teacherId &&
+                    e.sessionID == sessionId &&
+                    (courseCode == null || e.courseCode == courseCode) &&
+                    e.Section != null)
+                .Select(e => e.Section)
+                .Distinct()
+                .OrderBy(s => s)
+                .Select(s => new { section = s })
+                .ToList();
+
+            return Ok(sections);
+        }
+
         // GET api/TeacherSelf/GetSessions
         // ─────────────────────────────────────────────────────────────────────
         [HttpGet]
