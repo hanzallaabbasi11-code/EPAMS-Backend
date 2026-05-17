@@ -215,6 +215,8 @@
     <Compile Include="Controllers\Director\PerformanceController.cs" />
     <Compile Include="Controllers\Director\ReaderController.cs" />
     <Compile Include="Controllers\Extra Work\ExtraFeaturesController.cs" />
+    <Compile Include="Controllers\Extra Work\KpiBasedComparisonController.cs" />
+    <Compile Include="Controllers\Extra Work\KpiBasedPerformanceController.cs" />
     <Compile Include="Controllers\HOD\CourseManagementController.cs" />
     <Compile Include="Controllers\HOD\KPIController.cs" />
     <Compile Include="Controllers\HOD\PeerEvaluatorsController.cs" />
